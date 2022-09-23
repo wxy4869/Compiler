@@ -34,7 +34,7 @@ public class IOUtils {
         File file = new File("output.txt");
         BufferedWriter writer = null;
         try {
-            writer = new BufferedWriter(new FileWriter(file));
+            writer = new BufferedWriter(new FileWriter(file, true));
             writer.write(s);
         } catch (Exception e) {
             e.printStackTrace();
