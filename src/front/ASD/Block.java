@@ -21,6 +21,11 @@ public class Block implements Node{
         IOUtils.write("<Block>\n");
     }
 
+    @Override
+    public ArrayList<Node> getChild() {
+        return new ArrayList<>(blockItem);
+    }
+
     public ArrayList<BlockItem> getBlockItem() {
         return blockItem;
     }

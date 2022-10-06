@@ -26,6 +26,11 @@ public class EqExp implements Node{
         }
     }
 
+    @Override
+    public ArrayList<Node> getChild() {
+        return new ArrayList<>(relExp);
+    }
+
     public ArrayList<RelExp> getRelExp() {
         return relExp;
     }

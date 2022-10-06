@@ -93,6 +93,32 @@ public class Stmt implements Node{
         IOUtils.write("<Stmt>\n");
     }
 
+    @Override
+    public ArrayList<Node> getChild() {
+        ArrayList<Node> child = new ArrayList<>();
+        if (type == 0) {
+            child.add(block);
+        } else if (type == 1 || type == 2) {
+            child.add(cond);
+            child.add(stmt1);
+            if (stmt2 != null) {
+                child.add(stmt2);
+            }
+        } else if (type == 5 && exp != null) {
+            child.add(exp);
+        } else if (type == 6) {
+            child.addAll(exps);
+        } else if (type == 7) {
+            child.add(lval);
+            child.add(exp);
+        } else if (type == 8) {
+            child.add(lval);
+        } else if (type == 9 && exp != null) {
+            child.add(exp);
+        }
+        return child;
+    }
+
     public Lval getLval() {
         return lval;
     }

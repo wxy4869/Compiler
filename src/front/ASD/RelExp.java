@@ -26,6 +26,11 @@ public class RelExp implements Node{
         }
     }
 
+    @Override
+    public ArrayList<Node> getChild() {
+        return new ArrayList<>(addExp);
+    }
+
     public ArrayList<AddExp> getAddExp() {
         return addExp;
     }

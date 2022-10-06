@@ -7,8 +7,8 @@ import utils.IOUtils;
 import java.util.ArrayList;
 
 public class MulExp implements Node{
-    private ArrayList<UnaryExp> unaryExp = new ArrayList<>();
-    private ArrayList<Token> ops = new ArrayList<>();
+    private ArrayList<UnaryExp> unaryExp;
+    private ArrayList<Token> ops;
 
     public MulExp(ArrayList<UnaryExp> unaryExp, ArrayList<Token> ops) {
         this.unaryExp = unaryExp;
@@ -25,6 +25,11 @@ public class MulExp implements Node{
                 IOUtils.write(ops.get(i).toString());
             }
         }
+    }
+
+    @Override
+    public ArrayList<Node> getChild() {
+        return new ArrayList<>(unaryExp);
     }
 
     public Pair<Token, Integer> getDimension() {

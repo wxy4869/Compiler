@@ -25,6 +25,11 @@ public class ConstDecl implements Node{
         IOUtils.write("<ConstDecl>\n");
     }
 
+    @Override
+    public ArrayList<Node> getChild() {
+        return new ArrayList<>(constDef);
+    }
+
     public ArrayList<ConstDef> getConstDef() {
         return constDef;
     }

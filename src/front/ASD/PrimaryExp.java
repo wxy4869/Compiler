@@ -4,6 +4,8 @@ import front.Token;
 import javafx.util.Pair;
 import utils.IOUtils;
 
+import java.util.ArrayList;
+
 public class PrimaryExp implements Node{
     private Exp exp;
     private Lval lval;
@@ -27,6 +29,19 @@ public class PrimaryExp implements Node{
             number.printMoi();
         }
         IOUtils.write("<PrimaryExp>\n");
+    }
+
+    @Override
+    public ArrayList<Node> getChild() {
+        ArrayList<Node> child = new ArrayList<>();
+        if (exp != null) {
+            child.add(exp);
+        } else if (lval != null) {
+            child.add(lval);
+        } else if (number != null) {
+            child.add(number);
+        }
+        return child;
     }
 
     public Pair<Token, Integer> getDimension() {

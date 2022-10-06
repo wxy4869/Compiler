@@ -3,6 +3,8 @@ package front.ASD;
 import front.Token;
 import utils.IOUtils;
 
+import java.util.ArrayList;
+
 public class Number implements Node{
     private Token number;
 
@@ -14,6 +16,11 @@ public class Number implements Node{
     public void printMoi() {
         IOUtils.write(number.toString());
         IOUtils.write("<Number>\n");
+    }
+
+    @Override
+    public ArrayList<Node> getChild() {
+        return new ArrayList<>();
     }
 
     public Token getNumber() {

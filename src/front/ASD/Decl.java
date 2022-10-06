@@ -1,5 +1,7 @@
 package front.ASD;
 
+import java.util.ArrayList;
+
 public class Decl implements Node{
     private ConstDecl constDecl;
     private VarDecl varDecl;
@@ -17,6 +19,18 @@ public class Decl implements Node{
         if (varDecl != null) {
             varDecl.printMoi();
         }
+    }
+
+    @Override
+    public ArrayList<Node> getChild() {
+        ArrayList<Node> child = new ArrayList<>();
+        if (constDecl != null) {
+            child.add(constDecl);
+        }
+        if (varDecl != null) {
+            child.add(varDecl);
+        }
+        return child;
     }
 
     public ConstDecl getConstDecl() {

@@ -23,6 +23,11 @@ public class LAndExp implements Node{
         }
     }
 
+    @Override
+    public ArrayList<Node> getChild() {
+        return new ArrayList<>(eqExp);
+    }
+
     public ArrayList<EqExp> getEqExp() {
         return eqExp;
     }

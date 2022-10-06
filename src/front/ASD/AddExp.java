@@ -27,6 +27,11 @@ public class AddExp implements Node{
         }
     }
 
+    @Override
+    public ArrayList<Node> getChild() {
+        return new ArrayList<>(mulExp);
+    }
+
     public Pair<Token, Integer> getDimension() {
         return mulExp.get(0).getDimension();
     }

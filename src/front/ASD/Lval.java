@@ -25,6 +25,11 @@ public class Lval implements Node{
         IOUtils.write("<LVal>\n");
     }
 
+    @Override
+    public ArrayList<Node> getChild() {
+        return new ArrayList<>(exp);
+    }
+
     public Token getIdent() {
         return ident;
     }

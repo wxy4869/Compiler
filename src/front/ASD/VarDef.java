@@ -31,6 +31,15 @@ public class VarDef implements Node{
         IOUtils.write("<VarDef>\n");
     }
 
+    @Override
+    public ArrayList<Node> getChild() {
+        ArrayList<Node> child = new ArrayList<>(constExp);
+        if (initVal != null) {
+            child.add(initVal);
+        }
+        return child;
+    }
+
     public Token getIdent() {
         return ident;
     }

@@ -32,6 +32,17 @@ public class InitVal implements Node{
         IOUtils.write("<InitVal>\n");
     }
 
+    @Override
+    public ArrayList<Node> getChild() {
+        ArrayList<Node> child = new ArrayList<>();
+        if (exp != null) {
+            child.add(exp);
+        } else {
+            child.addAll(initVal);
+        }
+        return child;
+    }
+
     public Exp getExp() {
         return exp;
     }

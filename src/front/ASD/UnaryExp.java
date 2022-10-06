@@ -4,6 +4,8 @@ import front.Token;
 import javafx.util.Pair;
 import utils.IOUtils;
 
+import java.util.ArrayList;
+
 public class UnaryExp implements Node{
     private PrimaryExp primaryExp;
     private Token ident;
@@ -35,6 +37,20 @@ public class UnaryExp implements Node{
             unaryExp.printMoi();
         }
         IOUtils.write("<UnaryExp>\n");
+    }
+
+    @Override
+    public ArrayList<Node> getChild() {
+        ArrayList<Node> child = new ArrayList<>();
+        if (primaryExp != null) {
+            child.add(primaryExp);
+        } else if (ident != null) {
+            child.add(funcRParams);
+        } else {
+            child.add(unaryOp);
+            child.add(unaryExp);
+        }
+        return child;
     }
 
     public Pair<Token, Integer> getDimension() {

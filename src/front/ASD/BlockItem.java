@@ -1,5 +1,7 @@
 package front.ASD;
 
+import java.util.ArrayList;
+
 public class BlockItem implements Node{
     private Decl decl;
     private Stmt stmt;
@@ -17,6 +19,18 @@ public class BlockItem implements Node{
         if (stmt != null) {
             stmt.printMoi();
         }
+    }
+
+    @Override
+    public ArrayList<Node> getChild() {
+        ArrayList<Node> child = new ArrayList<>();
+        if (decl != null) {
+            child.add(decl);
+        }
+        if (stmt != null) {
+            child.add(stmt);
+        }
+        return child;
     }
 
     public Decl getDecl() {

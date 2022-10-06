@@ -32,6 +32,17 @@ public class ConstInitVal implements Node{
         IOUtils.write("<ConstInitVal>\n");
     }
 
+    @Override
+    public ArrayList<Node> getChild() {
+        ArrayList<Node> child = new ArrayList<>();
+        if (constExp != null) {
+            child.add(constExp);
+        } else {
+            child.addAll(constInitVal);
+        }
+        return child;
+    }
+
     public ConstExp getConstExp() {
         return constExp;
     }

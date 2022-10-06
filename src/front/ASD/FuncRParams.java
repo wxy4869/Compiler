@@ -22,6 +22,11 @@ public class FuncRParams implements Node{
         IOUtils.write("<FuncRParams>\n");
     }
 
+    @Override
+    public ArrayList<Node> getChild() {
+        return new ArrayList<>(exp);
+    }
+
     public ArrayList<Exp> getExp() {
         return exp;
     }

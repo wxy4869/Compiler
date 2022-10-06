@@ -3,6 +3,8 @@ package front.ASD;
 import front.Token;
 import utils.IOUtils;
 
+import java.util.ArrayList;
+
 public class FuncFParam implements Node{
     private Token ident;
     private ConstExp constExp;
@@ -29,6 +31,15 @@ public class FuncFParam implements Node{
             IOUtils.write("RBRACK ]\n");
         }
         IOUtils.write("<FuncFParam>\n");
+    }
+
+    @Override
+    public ArrayList<Node> getChild() {
+        ArrayList<Node> child = new ArrayList<>();
+        if (type == 2) {
+            child.add(constExp);
+        }
+        return child;
     }
 
     public Token getIdent() {

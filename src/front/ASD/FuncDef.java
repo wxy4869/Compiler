@@ -3,6 +3,8 @@ package front.ASD;
 import front.Token;
 import utils.IOUtils;
 
+import java.util.ArrayList;
+
 public class FuncDef implements Node{
     private FuncType funcType;
     private Token ident;
@@ -27,6 +29,17 @@ public class FuncDef implements Node{
         IOUtils.write("RPARENT )\n");
         block.printMoi();
         IOUtils.write("<FuncDef>\n");
+    }
+
+    @Override
+    public ArrayList<Node> getChild() {
+        ArrayList<Node> child = new ArrayList<>();
+        child.add(funcType);
+        if (funcFParams != null) {
+            child.add(funcFParams);
+        }
+        child.add(block);
+        return child;
     }
 
     public FuncType getFuncType() {

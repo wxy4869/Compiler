@@ -48,6 +48,15 @@ public class CompUnit implements Node{
         IOUtils.write("<CompUnit>\n");
     }
 
+    @Override
+    public ArrayList<Node> getChild() {
+        ArrayList<Node> child = new ArrayList<>();
+        child.addAll(decl);
+        child.addAll(funcDef);
+        child.add(mainFuncDef);
+        return child;
+    }
+
     public ArrayList<Decl> getDecl() {
         return decl;
     }

@@ -29,6 +29,13 @@ public class ConstDef implements Node{
         IOUtils.write("<ConstDef>\n");
     }
 
+    @Override
+    public ArrayList<Node> getChild() {
+        ArrayList<Node> child = new ArrayList<>(constExp);
+        child.add(constInitVal);
+        return child;
+    }
+
     public Token getIdent() {
         return ident;
     }

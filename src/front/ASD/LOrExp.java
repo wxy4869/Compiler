@@ -23,6 +23,11 @@ public class LOrExp implements Node{
         }
     }
 
+    @Override
+    public ArrayList<Node> getChild() {
+        return new ArrayList<>(lAndExp);
+    }
+
     public ArrayList<LAndExp> getlAndExp() {
         return lAndExp;
     }

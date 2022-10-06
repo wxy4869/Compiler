@@ -24,6 +24,11 @@ public class VarDecl implements Node{
         IOUtils.write("<VarDecl>\n");
     }
 
+    @Override
+    public ArrayList<Node> getChild() {
+        return new ArrayList<>(varDef);
+    }
+
     public ArrayList<VarDef> getVarDef() {
         return varDef;
     }

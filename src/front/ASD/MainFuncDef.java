@@ -3,6 +3,8 @@ package front.ASD;
 import front.Token;
 import utils.IOUtils;
 
+import java.util.ArrayList;
+
 public class MainFuncDef implements Node{
     private Token main;
     private Block block;
@@ -20,6 +22,13 @@ public class MainFuncDef implements Node{
         IOUtils.write("RPARENT )\n");
         block.printMoi();
         IOUtils.write("<MainFuncDef>\n");
+    }
+
+    @Override
+    public ArrayList<Node> getChild() {
+        ArrayList<Node> child = new ArrayList<>();
+        child.add(block);
+        return child;
     }
 
     public Token getMain() {
