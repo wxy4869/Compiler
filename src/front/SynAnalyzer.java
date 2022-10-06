@@ -201,22 +201,22 @@ public class SynAnalyzer {
     public FuncFParam FuncFParam() {
         Token ident;
         ConstExp constExp = null;
-        int type = 0; // 0 普通变量 1 一维数组 2 二维数组
+        int dimension = 0;
         nextSym();
         ident = sym(0);
         nextSym();
         if (getSymType(0).equals("LBRACK")) {
-            type = 1;
+            dimension = 1;
             nextSym();
             nextSym();
             if (getSymType(0).equals("LBRACK")) {
-                type = 2;
+                dimension = 2;
                 nextSym();
                 constExp = ConstExp();
                 nextSym();
             }
         }
-        return new FuncFParam(ident, constExp, type);
+        return new FuncFParam(ident, constExp, dimension);
     }
 
     public Block Block() {

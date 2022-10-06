@@ -6,22 +6,22 @@ import utils.IOUtils;
 public class FuncFParam implements Node{
     private Token ident;
     private ConstExp constExp;
-    private int type; // 0 普通变量 1 一维数组 2 二维数组
+    private int dimension;
 
-    public FuncFParam(Token ident, ConstExp constExp, int type) {
+    public FuncFParam(Token ident, ConstExp constExp, int dimension) {
         this.ident = ident;
         this.constExp = constExp;
-        this.type = type;
+        this.dimension = dimension;
     }
 
     @Override
     public void printMoi() {
         IOUtils.write("INTTK int\n");
         IOUtils.write(ident.toString());
-        if (type == 1) {
+        if (dimension == 1) {
             IOUtils.write("LBRACK [\n");
             IOUtils.write("RBRACK ]\n");
-        } else if (type == 2) {
+        } else if (dimension == 2) {
             IOUtils.write("LBRACK [\n");
             IOUtils.write("RBRACK ]\n");
             IOUtils.write("LBRACK [\n");
@@ -39,7 +39,7 @@ public class FuncFParam implements Node{
         return constExp;
     }
 
-    public int getType() {
-        return type;
+    public int getDimension() {
+        return dimension;
     }
 }
