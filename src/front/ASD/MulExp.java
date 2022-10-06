@@ -25,4 +25,12 @@ public class MulExp implements Node{
             }
         }
     }
+
+    public ArrayList<UnaryExp> getUnaryExp() {
+        return unaryExp;
+    }
+
+    public ArrayList<Token> getOps() {
+        return ops;
+    }
 }

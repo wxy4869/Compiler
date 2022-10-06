@@ -25,4 +25,12 @@ public class EqExp implements Node{
             }
         }
     }
+
+    public ArrayList<RelExp> getRelExp() {
+        return relExp;
+    }
+
+    public ArrayList<Token> getOps() {
+        return ops;
+    }
 }

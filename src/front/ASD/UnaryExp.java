@@ -35,4 +35,24 @@ public class UnaryExp implements Node{
         }
         IOUtils.write("<UnaryExp>\n");
     }
+
+    public PrimaryExp getPrimaryExp() {
+        return primaryExp;
+    }
+
+    public Token getIdent() {
+        return ident;
+    }
+
+    public FuncRParams getFuncRParams() {
+        return funcRParams;
+    }
+
+    public UnaryOp getUnaryOp() {
+        return unaryOp;
+    }
+
+    public UnaryExp getUnaryExp() {
+        return unaryExp;
+    }
 }

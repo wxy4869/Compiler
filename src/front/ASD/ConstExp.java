@@ -14,4 +14,8 @@ public class ConstExp implements Node{
         addExp.printMoi();
         IOUtils.write("<ConstExp>\n");
     }
+
+    public AddExp getAddExp() {
+        return addExp;
+    }
 }

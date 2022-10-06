@@ -31,4 +31,12 @@ public class ConstInitVal implements Node{
         }
         IOUtils.write("<ConstInitVal>\n");
     }
+
+    public ConstExp getConstExp() {
+        return constExp;
+    }
+
+    public ArrayList<ConstInitVal> getConstInitVal() {
+        return constInitVal;
+    }
 }

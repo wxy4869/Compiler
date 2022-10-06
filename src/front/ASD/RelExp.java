@@ -25,4 +25,12 @@ public class RelExp implements Node{
             }
         }
     }
+
+    public ArrayList<AddExp> getAddExp() {
+        return addExp;
+    }
+
+    public ArrayList<Token> getOps() {
+        return ops;
+    }
 }

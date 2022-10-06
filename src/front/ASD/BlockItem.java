@@ -18,4 +18,12 @@ public class BlockItem implements Node{
             stmt.printMoi();
         }
     }
+
+    public Decl getDecl() {
+        return decl;
+    }
+
+    public Stmt getStmt() {
+        return stmt;
+    }
 }

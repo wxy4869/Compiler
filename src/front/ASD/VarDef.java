@@ -30,4 +30,16 @@ public class VarDef implements Node{
         }
         IOUtils.write("<VarDef>\n");
     }
+
+    public Token getIdent() {
+        return ident;
+    }
+
+    public ArrayList<ConstExp> getConstExp() {
+        return constExp;
+    }
+
+    public InitVal getInitVal() {
+        return initVal;
+    }
 }

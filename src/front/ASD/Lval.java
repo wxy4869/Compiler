@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class Lval implements Node{
     private Token ident;
-    private ArrayList<Exp> exp = new ArrayList<>();
+    private ArrayList<Exp> exp;
 
     public Lval(Token ident, ArrayList<Exp> exp) {
         this.ident = ident;
@@ -23,5 +23,13 @@ public class Lval implements Node{
             IOUtils.write("RBRACK ]\n");
         }
         IOUtils.write("<LVal>\n");
+    }
+
+    public Token getIdent() {
+        return ident;
+    }
+
+    public ArrayList<Exp> getExp() {
+        return exp;
     }
 }

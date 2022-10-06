@@ -25,4 +25,12 @@ public class AddExp implements Node{
             }
         }
     }
+
+    public ArrayList<MulExp> getMulExp() {
+        return mulExp;
+    }
+
+    public ArrayList<Token> getOps() {
+        return ops;
+    }
 }

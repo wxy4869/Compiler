@@ -24,4 +24,8 @@ public class ConstDecl implements Node{
         IOUtils.write("SEMICN ;\n");
         IOUtils.write("<ConstDecl>\n");
     }
+
+    public ArrayList<ConstDef> getConstDef() {
+        return constDef;
+    }
 }

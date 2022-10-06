@@ -14,4 +14,8 @@ public class Cond implements Node{
         lOrExp.printMoi();
         IOUtils.write("<Cond>\n");
     }
+
+    public LOrExp getlOrExp() {
+        return lOrExp;
+    }
 }

@@ -21,4 +21,8 @@ public class FuncFParams implements Node{
         }
         IOUtils.write("<FuncFParams>\n");
     }
+
+    public ArrayList<FuncFParam> getFuncFParam() {
+        return funcFParam;
+    }
 }

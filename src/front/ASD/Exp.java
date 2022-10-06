@@ -14,4 +14,8 @@ public class Exp implements Node{
         addExp.printMoi();
         IOUtils.write("<Exp>\n");
     }
+
+    public AddExp getAddExp() {
+        return addExp;
+    }
 }

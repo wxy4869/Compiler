@@ -31,4 +31,12 @@ public class InitVal implements Node{
         }
         IOUtils.write("<InitVal>\n");
     }
+
+    public Exp getExp() {
+        return exp;
+    }
+
+    public ArrayList<InitVal> getInitVal() {
+        return initVal;
+    }
 }

@@ -26,4 +26,16 @@ public class PrimaryExp implements Node{
         }
         IOUtils.write("<PrimaryExp>\n");
     }
+
+    public Exp getExp() {
+        return exp;
+    }
+
+    public Lval getLval() {
+        return lval;
+    }
+
+    public Number getNumber() {
+        return number;
+    }
 }

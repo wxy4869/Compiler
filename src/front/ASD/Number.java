@@ -15,4 +15,8 @@ public class Number implements Node{
         IOUtils.write(number.toString());
         IOUtils.write("<Number>\n");
     }
+
+    public Token getNumber() {
+        return number;
+    }
 }

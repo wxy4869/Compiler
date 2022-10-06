@@ -20,4 +20,8 @@ public class Block implements Node{
         IOUtils.write("RBRACE }\n");
         IOUtils.write("<Block>\n");
     }
+
+    public ArrayList<BlockItem> getBlockItem() {
+        return blockItem;
+    }
 }

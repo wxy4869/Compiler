@@ -23,4 +23,8 @@ public class VarDecl implements Node{
         IOUtils.write("SEMICN ;\n");
         IOUtils.write("<VarDecl>\n");
     }
+
+    public ArrayList<VarDef> getVarDef() {
+        return varDef;
+    }
 }

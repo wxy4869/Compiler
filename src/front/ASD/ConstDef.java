@@ -28,4 +28,16 @@ public class ConstDef implements Node{
         constInitVal.printMoi();
         IOUtils.write("<ConstDef>\n");
     }
+
+    public Token getIdent() {
+        return ident;
+    }
+
+    public ArrayList<ConstExp> getConstExp() {
+        return constExp;
+    }
+
+    public ConstInitVal getConstInitVal() {
+        return constInitVal;
+    }
 }

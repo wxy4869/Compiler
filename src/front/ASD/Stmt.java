@@ -90,4 +90,40 @@ public class Stmt implements Node{
         }
         IOUtils.write("<Stmt>\n");
     }
+
+    public Lval getLval() {
+        return lval;
+    }
+
+    public Exp getExp() {
+        return exp;
+    }
+
+    public ArrayList<Exp> getExps() {
+        return exps;
+    }
+
+    public Block getBlock() {
+        return block;
+    }
+
+    public Cond getCond() {
+        return cond;
+    }
+
+    public Stmt getStmt1() {
+        return stmt1;
+    }
+
+    public Stmt getStmt2() {
+        return stmt2;
+    }
+
+    public Token getFormatString() {
+        return formatString;
+    }
+
+    public int getType() {
+        return type;
+    }
 }

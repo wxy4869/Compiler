@@ -22,4 +22,8 @@ public class LOrExp implements Node{
             }
         }
     }
+
+    public ArrayList<LAndExp> getlAndExp() {
+        return lAndExp;
+    }
 }

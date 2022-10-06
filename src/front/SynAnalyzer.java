@@ -170,13 +170,15 @@ public class SynAnalyzer {
     }
 
     public MainFuncDef MainFuncDef() {
+        Token main;
         Block block;
         nextSym();
+        main = sym(0);
         nextSym();
         nextSym();
         nextSym();
         block = Block();
-        return new MainFuncDef(block);
+        return new MainFuncDef(main, block);
     }
 
     public FuncType FuncType() {

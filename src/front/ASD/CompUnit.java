@@ -47,4 +47,16 @@ public class CompUnit implements Node{
 
         IOUtils.write("<CompUnit>\n");
     }
+
+    public ArrayList<Decl> getDecl() {
+        return decl;
+    }
+
+    public ArrayList<FuncDef> getFuncDef() {
+        return funcDef;
+    }
+
+    public MainFuncDef getMainFuncDef() {
+        return mainFuncDef;
+    }
 }

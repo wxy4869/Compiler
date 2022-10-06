@@ -15,4 +15,8 @@ public class FuncType implements Node{
         IOUtils.write(funcType.toString());
         IOUtils.write("<FuncType>\n");
     }
+
+    public Token getFuncType() {
+        return funcType;
+    }
 }

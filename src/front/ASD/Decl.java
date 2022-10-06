@@ -18,4 +18,12 @@ public class Decl implements Node{
             varDecl.printMoi();
         }
     }
+
+    public ConstDecl getConstDecl() {
+        return constDecl;
+    }
+
+    public VarDecl getVarDecl() {
+        return varDecl;
+    }
 }

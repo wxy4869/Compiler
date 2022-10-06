@@ -15,4 +15,8 @@ public class UnaryOp implements Node{
         IOUtils.write(op.toString());
         IOUtils.write("<UnaryOp>\n");
     }
+
+    public Token getOp() {
+        return op;
+    }
 }

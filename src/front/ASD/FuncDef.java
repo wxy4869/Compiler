@@ -28,4 +28,20 @@ public class FuncDef implements Node{
         block.printMoi();
         IOUtils.write("<FuncDef>\n");
     }
+
+    public FuncType getFuncType() {
+        return funcType;
+    }
+
+    public Token getIdent() {
+        return ident;
+    }
+
+    public FuncFParams getFuncFParams() {
+        return funcFParams;
+    }
+
+    public Block getBlock() {
+        return block;
+    }
 }

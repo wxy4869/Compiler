@@ -30,4 +30,16 @@ public class FuncFParam implements Node{
         }
         IOUtils.write("<FuncFParam>\n");
     }
+
+    public Token getIdent() {
+        return ident;
+    }
+
+    public ConstExp getConstExp() {
+        return constExp;
+    }
+
+    public int getType() {
+        return type;
+    }
 }
