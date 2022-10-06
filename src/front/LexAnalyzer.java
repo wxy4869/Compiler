@@ -41,7 +41,9 @@ public class LexAnalyzer {
                     j++;
                 }
                 String substr = s.substring(i, j + 1);
-                tokens.add(new Token(substr, "STRCON", 0, substr, lineNum));
+                Token token = new Token(substr, "STRCON", 0, substr, lineNum);
+                tokens.add(token);
+                ErrHandler.HandleA(token);
                 i = j;
             } else if (c == '!') {
                 if (d == '=') {

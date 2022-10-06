@@ -31,10 +31,10 @@ public class IOUtils {
     }
 
     public static void write(String s) {
-        File file = new File("output.txt");
+        File file = new File("error.txt");  // 词法分析、语法分析时 pathname=output.txt, 错误处理时 pathname=error.txt
         BufferedWriter writer = null;
         try {
-            writer = new BufferedWriter(new FileWriter(file, true));
+            writer = new BufferedWriter(new FileWriter(file, false));  // 语法分析时 append = true, 词法分析、错误处理时 append = false
             writer.write(s);
         } catch (Exception e) {
             e.printStackTrace();

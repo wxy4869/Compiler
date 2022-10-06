@@ -60,11 +60,15 @@ public class SynAnalyzer {
         nextSym();
         nextSym();
         constDef.add(ConstDef());
-        while (!getSymType(0).equals("SEMICN")) {
+        while (getSymType(0).equals("COMMA")) {
             nextSym();
             constDef.add(ConstDef());
         }
-        nextSym();
+        if (!sym(0).getDst().equals("SEMICN")) {
+            ErrHandler.errors.add(new Error("i",sym(-1).getLineNum()));
+        } else {
+            nextSym();
+        }
         return new ConstDecl(constDef);
     }
 
@@ -77,7 +81,11 @@ public class SynAnalyzer {
         while (getSymType(0).equals("LBRACK")) {
             nextSym();
             constExp.add(ConstExp());
-            nextSym();
+            if (!sym(0).getDst().equals("RBRACK")) {
+                ErrHandler.errors.add(new Error("k",sym(-1).getLineNum()));
+            } else {
+                nextSym();
+            }
         }
         nextSym();
         constInitVal = ConstInitVal();
@@ -107,11 +115,15 @@ public class SynAnalyzer {
         ArrayList<VarDef> varDef = new ArrayList<>();
         nextSym();
         varDef.add(VarDef());
-        while (!getSymType(0).equals("SEMICN")) {
+        while (getSymType(0).equals("COMMA")) {
             nextSym();
             varDef.add(VarDef());
         }
-        nextSym();
+        if (!sym(0).getDst().equals("SEMICN")) {
+            ErrHandler.errors.add(new Error("i",sym(-1).getLineNum()));
+        } else {
+            nextSym();
+        }
         return new VarDecl(varDef);
     }
 
@@ -124,7 +136,11 @@ public class SynAnalyzer {
         while (getSymType(0).equals("LBRACK")) {
             nextSym();
             constExp.add(ConstExp());
-            nextSym();
+            if (!sym(0).getDst().equals("RBRACK")) {
+                ErrHandler.errors.add(new Error("k",sym(-1).getLineNum()));
+            } else {
+                nextSym();
+            }
         }
         if (getSymType(0).equals("ASSIGN")) {
             nextSym();
@@ -161,10 +177,19 @@ public class SynAnalyzer {
         ident = sym(0);
         nextSym();
         nextSym();
+        int tmp = index;
         if (!getSymType(0).equals("RPARENT")) {
-            funcFParams = FuncFParams();
+            try {
+                funcFParams = FuncFParams();
+            } catch (Exception e) {
+                index = tmp;
+            }
         }
-        nextSym();
+        if (!sym(0).getDst().equals("RPARENT")) {
+            ErrHandler.errors.add(new Error("j",sym(-1).getLineNum()));
+        } else {
+            nextSym();
+        }
         block = Block();
         return new FuncDef(funcType, ident, funcFParams, block);
     }
@@ -208,12 +233,20 @@ public class SynAnalyzer {
         if (getSymType(0).equals("LBRACK")) {
             type = 1;
             nextSym();
-            nextSym();
+            if (!sym(0).getDst().equals("RBRACK")) {
+                ErrHandler.errors.add(new Error("k",sym(-1).getLineNum()));
+            } else {
+                nextSym();
+            }
             if (getSymType(0).equals("LBRACK")) {
                 type = 2;
                 nextSym();
                 constExp = ConstExp();
-                nextSym();
+                if (!sym(0).getDst().equals("RBRACK")) {
+                    ErrHandler.errors.add(new Error("k",sym(-1).getLineNum()));
+                } else {
+                    nextSym();
+                }
             }
         }
         return new FuncFParam(ident, constExp, type);
@@ -221,12 +254,14 @@ public class SynAnalyzer {
 
     public Block Block() {
         ArrayList<BlockItem> blockItem = new ArrayList<>();
+        Token rbrace;
         nextSym();
         while (!getSymType(0).equals("RBRACE")) {
             blockItem.add(BlockItem());
         }
+        rbrace = sym(0);
         nextSym();
-        return new Block(blockItem);
+        return new Block(blockItem, rbrace);
     }
 
     public BlockItem BlockItem() {
@@ -248,6 +283,9 @@ public class SynAnalyzer {
         Cond cond = null;
         Stmt stmt1 = null;
         Stmt stmt2 = null;
+        Token breakTK = null;
+        Token continueTK = null;
+        Token returnTK = null;
         Token printf = null;
         Token formatString = null;
         int type = -1;
@@ -258,7 +296,11 @@ public class SynAnalyzer {
             nextSym();
             nextSym();
             cond = Cond();
-            nextSym();
+            if (!sym(0).getDst().equals("RPARENT")) {
+                ErrHandler.errors.add(new Error("j",sym(-1).getLineNum()));
+            } else {
+                nextSym();
+            }
             stmt1 = Stmt();
             if (getSymType(0).equals("ELSETK")) {
                 nextSym();
@@ -269,23 +311,47 @@ public class SynAnalyzer {
             nextSym();
             nextSym();
             cond = Cond();
-            nextSym();
+            if (!sym(0).getDst().equals("RPARENT")) {
+                ErrHandler.errors.add(new Error("j",sym(-1).getLineNum()));
+            } else {
+                nextSym();
+            }
             stmt1 = Stmt();
             type = 2;
         } else if (getSymType(0).equals("BREAKTK")) { // 'break' ';'
+            breakTK = sym(0);
             nextSym();
-            nextSym();
+            if (!sym(0).getDst().equals("SEMICN")) {
+                ErrHandler.errors.add(new Error("i",sym(-1).getLineNum()));
+            } else {
+                nextSym();
+            }
             type = 3;
         } else if (getSymType(0).equals("CONTINUETK")) { // 'continue' ';'
+            continueTK = sym(0);
             nextSym();
-            nextSym();
+            if (!sym(0).getDst().equals("SEMICN")) {
+                ErrHandler.errors.add(new Error("i",sym(-1).getLineNum()));
+            } else {
+                nextSym();
+            }
             type = 4;
         } else if (getSymType(0).equals("RETURNTK")) { // 'return' [Exp] ';'
+            returnTK = sym(0);
             nextSym();
+            int tmp = index;
             if (!getSymType(0).equals("SEMICN")) {
-                exp = Exp();
+                try {
+                    exp = Exp();
+                } catch (Exception e) {
+                    index = tmp;
+                }
             }
-            nextSym();
+            if (!sym(0).getDst().equals("SEMICN")) {
+                ErrHandler.errors.add(new Error("i",sym(-1).getLineNum()));
+            } else {
+                nextSym();
+            }
             type = 5;
         } else if (getSymType(0).equals("PRINTFTK")) { // 'printf''('FormatString{','Exp}')'';'
             printf = sym(0);
@@ -293,18 +359,35 @@ public class SynAnalyzer {
             nextSym();
             formatString = sym(0);
             nextSym();
-            while (!getSymType(0).equals("RPARENT")) {
+            while (getSymType(0).equals("COMMA")) {
                 nextSym();
                 exps.add(Exp());
             }
-            nextSym();
-            nextSym();
+            if (!sym(0).getDst().equals("RPARENT")) {
+                ErrHandler.errors.add(new Error("j",sym(-1).getLineNum()));
+            } else {
+                nextSym();
+            }
+            if (!sym(0).getDst().equals("SEMICN")) {
+                ErrHandler.errors.add(new Error("i",sym(-1).getLineNum()));
+            } else {
+                nextSym();
+            }
             type = 6;
         } else if (getSymType(0).equals("LPARENT") || getSymType(0).equals("INTCON")) { // [Exp] ';' 的第一种情况
+            int tmp = index;
             if (!getSymType(0).equals("SEMICN")) {
-                exp = Exp();
+                try {
+                    exp = Exp();
+                } catch (Exception e) {
+                    index = tmp;
+                }
             }
-            nextSym();
+            if (!sym(0).getDst().equals("SEMICN")) {
+                ErrHandler.errors.add(new Error("i",sym(-1).getLineNum()));
+            } else {
+                nextSym();
+            }
             type = 9;
         }
         if (type == -1) {
@@ -315,13 +398,25 @@ public class SynAnalyzer {
                 nextSym();
                 if (!getSymType(0).equals("GETINTTK")) { // LVal '=' Exp ';'
                     exp = Exp();
-                    nextSym();
+                    if (!sym(0).getDst().equals("SEMICN")) {
+                        ErrHandler.errors.add(new Error("i",sym(-1).getLineNum()));
+                    } else {
+                        nextSym();
+                    }
                     type = 7;
                 } else { // LVal '=' 'getint''('')'';'
                     nextSym();
                     nextSym();
-                    nextSym();
-                    nextSym();
+                    if (!sym(0).getDst().equals("RPARENT")) {
+                        ErrHandler.errors.add(new Error("j",sym(-1).getLineNum()));
+                    } else {
+                        nextSym();
+                    }
+                    if (!sym(0).getDst().equals("SEMICN")) {
+                        ErrHandler.errors.add(new Error("i",sym(-1).getLineNum()));
+                    } else {
+                        nextSym();
+                    }
                     type = 8;
                 }
             } else { // [Exp] ';' 的第二种情况
@@ -360,7 +455,7 @@ public class SynAnalyzer {
             nextSym();
             type = 9;
         }*/
-        return new Stmt(lval, exp, exps, block, cond, stmt1, stmt2, printf, formatString, type);
+        return new Stmt(lval, exp, exps, block, cond, stmt1, stmt2, breakTK, continueTK, returnTK, printf, formatString, type);
     }
 
     public Exp Exp() {
@@ -383,7 +478,11 @@ public class SynAnalyzer {
         while (getSymType(0).equals("LBRACK")) {
             nextSym();
             exp.add(Exp());
-            nextSym();
+            if (!sym(0).getDst().equals("RBRACK")) {
+                ErrHandler.errors.add(new Error("k",sym(-1).getLineNum()));
+            } else {
+                nextSym();
+            }
         }
         return new Lval(ident, exp);
     }
@@ -424,10 +523,19 @@ public class SynAnalyzer {
             ident = sym(0);
             nextSym();
             nextSym();
+            int tmp = index;
             if (!getSymType(0).equals("RPARENT")) {
-                funcRParams = FuncRParams();
+                try {
+                    funcRParams = FuncRParams();
+                } catch (Exception e) {
+                    index = tmp;
+                }
             }
-            nextSym();
+            if (!sym(0).getDst().equals("RPARENT")) {
+                ErrHandler.errors.add(new Error("j",sym(-1).getLineNum()));
+            } else {
+                nextSym();
+            }
         } else {
             primaryExp = PrimaryExp();
         }

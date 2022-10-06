@@ -1,14 +1,17 @@
 package front.ASD;
 
+import front.Token;
 import utils.IOUtils;
 
 import java.util.ArrayList;
 
 public class Block implements Node{
     private ArrayList<BlockItem> blockItem;
+    private Token rbrace;
 
-    public Block(ArrayList<BlockItem> blockItem) {
+    public Block(ArrayList<BlockItem> blockItem, Token rbrace) {
         this.blockItem = blockItem;
+        this.rbrace = rbrace;
     }
 
     @Override
@@ -28,5 +31,9 @@ public class Block implements Node{
 
     public ArrayList<BlockItem> getBlockItem() {
         return blockItem;
+    }
+
+    public Token getRbrace() {
+        return rbrace;
     }
 }
