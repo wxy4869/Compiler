@@ -201,22 +201,22 @@ public class SynAnalyzer {
     public FuncFParam FuncFParam() {
         Token ident;
         ConstExp constExp = null;
-        int dimension = 0;
+        int type = 0;
         nextSym();
         ident = sym(0);
         nextSym();
         if (getSymType(0).equals("LBRACK")) {
-            dimension = 1;
+            type = 1;
             nextSym();
             nextSym();
             if (getSymType(0).equals("LBRACK")) {
-                dimension = 2;
+                type = 2;
                 nextSym();
                 constExp = ConstExp();
                 nextSym();
             }
         }
-        return new FuncFParam(ident, constExp, dimension);
+        return new FuncFParam(ident, constExp, type);
     }
 
     public Block Block() {
@@ -248,6 +248,7 @@ public class SynAnalyzer {
         Cond cond = null;
         Stmt stmt1 = null;
         Stmt stmt2 = null;
+        Token printf = null;
         Token formatString = null;
         int type = -1;
         if (getSymType(0).equals("LBRACE")) { // Block
@@ -287,6 +288,7 @@ public class SynAnalyzer {
             nextSym();
             type = 5;
         } else if (getSymType(0).equals("PRINTFTK")) { // 'printf''('FormatString{','Exp}')'';'
+            printf = sym(0);
             nextSym();
             nextSym();
             formatString = sym(0);
@@ -358,7 +360,7 @@ public class SynAnalyzer {
             nextSym();
             type = 9;
         }*/
-        return new Stmt(lval, exp, exps, block, cond, stmt1, stmt2, formatString, type);
+        return new Stmt(lval, exp, exps, block, cond, stmt1, stmt2, printf, formatString, type);
     }
 
     public Exp Exp() {

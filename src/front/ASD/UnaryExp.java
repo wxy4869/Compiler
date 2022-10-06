@@ -1,6 +1,7 @@
 package front.ASD;
 
 import front.Token;
+import javafx.util.Pair;
 import utils.IOUtils;
 
 public class UnaryExp implements Node{
@@ -34,6 +35,16 @@ public class UnaryExp implements Node{
             unaryExp.printMoi();
         }
         IOUtils.write("<UnaryExp>\n");
+    }
+
+    public Pair<Token, Integer> getDimension() {
+        if (primaryExp != null) {
+            return primaryExp.getDimension();
+        } else if (ident != null) {
+            return new Pair<>(ident, 0);
+        } else {
+            return unaryExp.getDimension();
+        }
     }
 
     public PrimaryExp getPrimaryExp() {

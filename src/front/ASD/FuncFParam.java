@@ -6,22 +6,22 @@ import utils.IOUtils;
 public class FuncFParam implements Node{
     private Token ident;
     private ConstExp constExp;
-    private int dimension;
+    private int type;
 
-    public FuncFParam(Token ident, ConstExp constExp, int dimension) {
+    public FuncFParam(Token ident, ConstExp constExp, int type) {
         this.ident = ident;
         this.constExp = constExp;
-        this.dimension = dimension;
+        this.type = type;
     }
 
     @Override
     public void printMoi() {
         IOUtils.write("INTTK int\n");
         IOUtils.write(ident.toString());
-        if (dimension == 1) {
+        if (type == 1) {
             IOUtils.write("LBRACK [\n");
             IOUtils.write("RBRACK ]\n");
-        } else if (dimension == 2) {
+        } else if (type == 2) {
             IOUtils.write("LBRACK [\n");
             IOUtils.write("RBRACK ]\n");
             IOUtils.write("LBRACK [\n");
@@ -39,7 +39,7 @@ public class FuncFParam implements Node{
         return constExp;
     }
 
-    public int getDimension() {
-        return dimension;
+    public int getType() {
+        return type;
     }
 }

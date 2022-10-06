@@ -1,6 +1,7 @@
 package front.ASD;
 
 import front.Token;
+import javafx.util.Pair;
 import utils.IOUtils;
 
 import java.util.ArrayList;
@@ -24,6 +25,10 @@ public class MulExp implements Node{
                 IOUtils.write(ops.get(i).toString());
             }
         }
+    }
+
+    public Pair<Token, Integer> getDimension() {
+        return unaryExp.get(0).getDimension();
     }
 
     public ArrayList<UnaryExp> getUnaryExp() {

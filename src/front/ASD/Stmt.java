@@ -13,10 +13,11 @@ public class Stmt implements Node{
     private Cond cond;
     private Stmt stmt1;
     private Stmt stmt2;
+    private Token printf;
     private Token formatString;
     private int type;
 
-    public Stmt(Lval lval, Exp exp, ArrayList<Exp> exps, Block block, Cond cond, Stmt stmt1, Stmt stmt2, Token formatString, int type) {
+    public Stmt(Lval lval, Exp exp, ArrayList<Exp> exps, Block block, Cond cond, Stmt stmt1, Stmt stmt2, Token printf, Token formatString, int type) {
         this.lval = lval;
         this.exp = exp;
         this.exps = exps;
@@ -24,6 +25,7 @@ public class Stmt implements Node{
         this.cond = cond;
         this.stmt1 = stmt1;
         this.stmt2 = stmt2;
+        this.printf = printf;
         this.formatString = formatString;
         this.type = type;
     }
@@ -117,6 +119,10 @@ public class Stmt implements Node{
 
     public Stmt getStmt2() {
         return stmt2;
+    }
+
+    public Token getPrintf() {
+        return printf;
     }
 
     public Token getFormatString() {

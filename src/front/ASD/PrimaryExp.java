@@ -1,5 +1,7 @@
 package front.ASD;
 
+import front.Token;
+import javafx.util.Pair;
 import utils.IOUtils;
 
 public class PrimaryExp implements Node{
@@ -25,6 +27,16 @@ public class PrimaryExp implements Node{
             number.printMoi();
         }
         IOUtils.write("<PrimaryExp>\n");
+    }
+
+    public Pair<Token, Integer> getDimension() {
+        if (exp != null) {
+            return exp.getDimension();
+        } else if (lval != null) {
+            return new Pair<>(lval.getIdent(), lval.getExp().size());
+        } else {
+            return new Pair<>(null, 0);
+        }
     }
 
     public Exp getExp() {
