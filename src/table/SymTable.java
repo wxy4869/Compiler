@@ -19,20 +19,18 @@ public class SymTable {
     public boolean findSymbol(String symbol, boolean inParent) {
         if (symbolMap.containsKey(symbol)) {
             return true;
-        } else if (inParent) {
+        } else if (inParent && parent != null) {
             return parent.findSymbol(symbol, inParent);
-        } else {
-            return false;
         }
+        return false;
     }
 
     public Symbol getSymbol(String symbol, boolean inParent) {
         if (symbolMap.containsKey(symbol)) {
             return symbolMap.get(symbol);
-        } else if (inParent) {
+        } else if (inParent && parent != null) {
             return parent.getSymbol(symbol, inParent);
-        } else {
-            return null;
         }
+        return null;
     }
 }

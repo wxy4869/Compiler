@@ -177,12 +177,9 @@ public class SynAnalyzer {
         ident = sym(0);
         nextSym();
         nextSym();
-        int tmp = index;
         if (!getSymType(0).equals("RPARENT")) {
-            try {
+            if (getSymType(0).equals("INTTK")) {
                 funcFParams = FuncFParams();
-            } catch (Exception e) {
-                index = tmp;
             }
         }
         if (!sym(0).getDst().equals("RPARENT")) {
@@ -343,6 +340,10 @@ public class SynAnalyzer {
             if (!getSymType(0).equals("SEMICN")) {
                 try {
                     exp = Exp();
+                    if (!getSymType(0).equals("SEMICN")) {
+                        tmp = index;
+                        exp = null;
+                    }
                 } catch (Exception e) {
                     index = tmp;
                 }
@@ -379,6 +380,10 @@ public class SynAnalyzer {
             if (!getSymType(0).equals("SEMICN")) {
                 try {
                     exp = Exp();
+                    if (!getSymType(0).equals("SEMICN")) {
+                        tmp = index;
+                        exp = null;
+                    }
                 } catch (Exception e) {
                     index = tmp;
                 }
@@ -527,6 +532,10 @@ public class SynAnalyzer {
             if (!getSymType(0).equals("RPARENT")) {
                 try {
                     funcRParams = FuncRParams();
+                    if (!getSymType(0).equals("RPARENT")) {
+                        tmp = index;
+                        funcRParams = null;
+                    }
                 } catch (Exception e) {
                     index = tmp;
                 }

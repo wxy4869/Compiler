@@ -1,8 +1,8 @@
 package front.ASD;
 
 import front.Token;
-import javafx.util.Pair;
 import utils.IOUtils;
+import utils.Pair;
 
 import java.util.ArrayList;
 
@@ -57,7 +57,7 @@ public class UnaryExp implements Node{
         if (primaryExp != null) {
             return primaryExp.getDimension();
         } else if (ident != null) {
-            return new Pair<>(ident, 0);
+            return new Pair<>(ident, null);
         } else {
             return unaryExp.getDimension();
         }

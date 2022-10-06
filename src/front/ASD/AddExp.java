@@ -1,8 +1,8 @@
 package front.ASD;
 
 import front.Token;
-import javafx.util.Pair;
 import utils.IOUtils;
+import utils.Pair;
 
 import java.util.ArrayList;
 

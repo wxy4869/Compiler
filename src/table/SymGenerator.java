@@ -4,7 +4,7 @@ import front.ASD.*;
 import front.ErrHandler;
 import front.Error;
 import front.Token;
-import javafx.util.Pair;
+import utils.Pair;
 
 import java.util.ArrayList;
 
@@ -18,7 +18,6 @@ public class SymGenerator {
     }
 
     public void generate(Node node, boolean inLoop) {
-        boolean inLoopTmp = false;
         if (node == null) {
             return;
         }
@@ -50,11 +49,13 @@ public class SymGenerator {
             if (currentTable.findSymbol(name, false)) {
                 ErrHandler.errors.add(new Error("b", funcDef.getIdent().getLineNum()));
             } else {
-                ArrayList<FuncFParam> funcFParam = funcDef.getFuncFParams().getFuncFParam();
                 ArrayList<Integer> paramDimension = new ArrayList<>();
-                for (FuncFParam value : funcFParam) {
-                    int dimension = value.getType() == 1 ? 1 : 0;
-                    paramDimension.add(dimension);
+                if (funcDef.getFuncFParams() != null) {
+                    ArrayList<FuncFParam> funcFParam = funcDef.getFuncFParams().getFuncFParam();
+                    for (FuncFParam value : funcFParam) {
+                        int dimension = value.getType();
+                        paramDimension.add(dimension);
+                    }
                 }
                 int paramNum = funcDef.getFuncFParams() == null ? 0 : funcDef.getFuncFParams().getFuncFParam().size();
                 currentTable.symbolMap.put(name, new Func(name, isVoid, paramNum, paramDimension));
@@ -102,7 +103,7 @@ public class SymGenerator {
                 String tmp = stmt.getFormatString().getSrc();
                 int size = tmp.length();
                 for (int i = 0; i < size; i++) {
-                    if (tmp.charAt(i) == '%') {
+                    if (tmp.charAt(i) == '%' && i + 1 < size && tmp.charAt(i + 1) == 'd') {
                         formatNum++;
                     }
                 }
@@ -110,7 +111,7 @@ public class SymGenerator {
                     ErrHandler.errors.add(new Error("l", stmt.getPrintf().getLineNum()));
                 }
             } else if (stmt.getType() == 2) {
-                inLoopTmp = true;
+                inLoop = true;
             } else if ((stmt.getType() == 3 || stmt.getType() == 4) && !inLoop) {
                 int lineNum = stmt.getBreakTK() != null ? stmt.getBreakTK().getLineNum() : stmt.getContinueTK().getLineNum();
                 ErrHandler.errors.add(new Error("m", lineNum));
@@ -125,10 +126,11 @@ public class SymGenerator {
             UnaryExp unaryExp = (UnaryExp)node;
             if (unaryExp.getIdent() != null) {
                 String name = unaryExp.getIdent().getSrc();
-                if (!currentTable.findSymbol(name, true)) {
+                boolean ys = currentTable.findSymbol(name, true);
+                if (!ys) {
                     ErrHandler.errors.add(new Error("c", unaryExp.getIdent().getLineNum()));
                 }
-                if (unaryExp.getFuncRParams() != null) {
+                if (ys && unaryExp.getFuncRParams() != null) {
                     Symbol symbol = currentTable.getSymbol(name, true);
                     Func func = (Func) symbol;
                     int paramNumF = func.getParamNum();
@@ -137,16 +139,17 @@ public class SymGenerator {
                         ErrHandler.errors.add(new Error("d", unaryExp.getIdent().getLineNum()));
                     }
                     ArrayList<Integer> paramDimensionF = func.getParamDimension();
-                    int size = unaryExp.getFuncRParams().getExp().size();
-                    for (int i = 0; i < size; i++) {
+                    for (int i = 0; i < paramNumF && i < paramNumR; i++) {
                         int paramDimensionR = 0;
                         Pair<Token, Integer> tmp = unaryExp.getFuncRParams().getExp().get(i).getDimension();
-                        Token tmpToken = tmp.getKey();
+                        Token tmpToken = tmp.getFirst();
                         if (tmpToken != null) {
                             Symbol tmpSymbol = currentTable.getSymbol(tmpToken.getSrc(), true);
                             if (tmpSymbol != null) {
                                 if (tmpSymbol instanceof Def) {
-                                    paramDimensionR = ((Def) tmpSymbol).getDimension() - tmp.getValue();
+                                    paramDimensionR = ((Def)tmpSymbol).getDimension() - tmp.getSecond();
+                                } else if (tmpSymbol instanceof Func) {
+                                    paramDimensionR = ((Func)tmpSymbol).isVoid() ? -1 : 0;
                                 }
                             }
                         }
@@ -160,14 +163,18 @@ public class SymGenerator {
         }
 
         for (Node value : node.getChild()) {
-            generate(value, inLoopTmp);
+            generate(value, inLoop);
         }
 
         if (node instanceof Block) {
             Block block = (Block)node;
             ArrayList<BlockItem> blockItem = block.getBlockItem();
-            Stmt stmt = blockItem.get(blockItem.size() - 1).getStmt();
-            if (stmt == null || stmt.getType() != 5) {
+            Stmt stmt = null;
+            int size = blockItem.size();
+            if (size > 0) {
+                stmt = blockItem.get(size - 1).getStmt();
+            }
+            if (currentTable.isFunc && !currentTable.isVoid && (stmt == null || stmt.getType() != 5)) {
                 ErrHandler.errors.add(new Error("g", block.getRbrace().getLineNum()));
             }
             currentTable = currentTable.parent;

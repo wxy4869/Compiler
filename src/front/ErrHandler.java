@@ -12,9 +12,15 @@ public class ErrHandler {
             if (!(formatString.charAt(i) == '%' || formatString.charAt(i) == 32 || formatString.charAt(i) == 33
                     || (formatString.charAt(i) >= 40 && formatString.charAt(i) <= 126))) {
                 errors.add(new Error("a",token.getLineNum()));
+                break;
             }
-            if (formatString.charAt(i) == '\\' && (i + 1 > size || formatString.charAt(i + 1) != 'n')) {
+            if (formatString.charAt(i) == '%' && (i + 1 >= size || formatString.charAt(i + 1) != 'd')) {
                 errors.add(new Error("a",token.getLineNum()));
+                break;
+            }
+            if (formatString.charAt(i) == '\\' && (i + 1 >= size || formatString.charAt(i + 1) != 'n')) {
+                errors.add(new Error("a",token.getLineNum()));
+                break;
             }
         }
     }
