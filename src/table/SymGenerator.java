@@ -3,18 +3,22 @@ package table;
 import front.ASD.*;
 import front.ErrHandler;
 import front.Error;
+import front.SynAnalyzer;
 import front.Token;
 import utils.Pair;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SymGenerator {
-    public static SymTable table;
+    public static Map<Node, SymTable> table;
     private SymTable currentTable;
 
     public SymGenerator() {
-        table = new SymTable(null, false, false);
-        currentTable = table;
+        table = new HashMap<>();
+        currentTable = new SymTable(null, false, false);
+        table.put(SynAnalyzer.root, currentTable);
     }
 
     public void generate(Node node, boolean inLoop) {
@@ -62,6 +66,7 @@ public class SymGenerator {
             }
             SymTable tmpTable = new SymTable(currentTable, true, isVoid);
             currentTable = tmpTable;
+            table.put(funcDef.getBlock(), currentTable);
         } else if (node instanceof MainFuncDef) {
             MainFuncDef mainFuncDef = (MainFuncDef)node;
             if (currentTable.findSymbol("main", false)) {
@@ -71,6 +76,7 @@ public class SymGenerator {
             }
             SymTable tmpTable = new SymTable(currentTable, true, false);
             currentTable = tmpTable;
+            table.put(mainFuncDef.getBlock(), currentTable);
         // ------------------------------------------------------------------------------------------------ 形参
         } else if (node instanceof FuncFParam) {
             FuncFParam funcFParam = (FuncFParam)node;
@@ -87,6 +93,7 @@ public class SymGenerator {
             if (stmt.getType() == 0) {
                 SymTable tmpTable = new SymTable(currentTable, false, false);
                 currentTable = tmpTable;
+                table.put(stmt.getBlock(), currentTable);
             } else if (stmt.getType() == 5) {
                 if (currentTable.isFunc && currentTable.isVoid && stmt.getExp() != null) {
                     ErrHandler.errors.add(new Error("f", stmt.getReturnTK().getLineNum()));
