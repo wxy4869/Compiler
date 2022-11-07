@@ -23,7 +23,15 @@ public class Error implements Comparable<Error> {
         return errorType;
     }
 
+    public void setErrorType(String errorType) {
+        this.errorType = errorType;
+    }
+
     public int getLineNum() {
         return lineNum;
+    }
+
+    public void setLineNum(int lineNum) {
+        this.lineNum = lineNum;
     }
 }

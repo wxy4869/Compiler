@@ -63,14 +63,14 @@ public class LexAnalyzer {
             } else if (c == '*') {
                 tokens.add(new Token("*", "MULT", 0, null, lineNum));
             } else if (c == '/') {
-                if (d == '/') {
+                if (d == '/') {  // 注释
                     int j = i + 1;
                     while (s.charAt(j) != '\0' && s.charAt(j) != '\n') {
                         j++;
                     }
                     i = j;
                     lineNum++;
-                } else if (d == '*') {
+                } else if (d == '*') {  // 注释
                     int j = i + 2;
                     while (s.charAt(j) != '\0' && !(s.charAt(j) == '*' && s.charAt(j + 1) == '/')) {
                         if (s.charAt(j) == '\n') {
