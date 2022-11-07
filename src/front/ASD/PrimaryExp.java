@@ -1,6 +1,8 @@
 package front.ASD;
 
 import front.Token;
+import table.Def;
+import table.SymGenerator;
 import utils.IOUtils;
 import utils.Pair;
 
@@ -51,6 +53,16 @@ public class PrimaryExp implements Node{
             return new Pair<>(lval.getIdent(), lval.getExp().size());
         } else {
             return new Pair<>(null, 0);
+        }
+    }
+
+    public int calValue() {
+        if (exp != null) {
+            return exp.calValue();
+        } else if (lval != null) {
+            return lval.calValue();
+        } else {
+            return number.calValue();
         }
     }
 

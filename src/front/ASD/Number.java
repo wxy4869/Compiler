@@ -23,6 +23,10 @@ public class Number implements Node{
         return new ArrayList<>();
     }
 
+    public int calValue() {
+        return number.getIntVal();
+    }
+
     public Token getNumber() {
         return number;
     }

@@ -36,6 +36,19 @@ public class AddExp implements Node{
         return mulExp.get(0).getDimension();
     }
 
+    public int calValue() {
+        int value = mulExp.get(0).calValue();
+        int size = mulExp.size();
+        for (int i = 1; i < size; i++) {
+            if (ops.get(i - 1).getSrc().equals("+")) {
+                value += mulExp.get(i).calValue();
+            } else {
+                value -= mulExp.get(i).calValue();
+            }
+        }
+        return value;
+    }
+
     public ArrayList<MulExp> getMulExp() {
         return mulExp;
     }

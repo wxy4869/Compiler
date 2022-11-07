@@ -26,6 +26,10 @@ public class Exp implements Node{
         return child;
     }
 
+    public int calValue() {
+        return addExp.calValue();
+    }
+
     public Pair<Token, Integer> getDimension() {
         return addExp.getDimension();
     }

@@ -24,6 +24,10 @@ public class ConstExp implements Node{
         return child;
     }
 
+    public int calValue() {
+        return addExp.calValue();
+    }
+
     public AddExp getAddExp() {
         return addExp;
     }

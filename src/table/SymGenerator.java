@@ -13,11 +13,11 @@ import java.util.Map;
 
 public class SymGenerator {
     public static Map<Node, SymTable> table;
-    private SymTable currentTable;
+    public static SymTable currentTable;
 
     public SymGenerator() {
         table = new HashMap<>();
-        currentTable = new SymTable(null, false, false);
+        currentTable = new SymTable(null, false, false, 0);
         table.put(SynAnalyzer.root, currentTable);
     }
 
@@ -34,7 +34,33 @@ public class SymGenerator {
                 ErrHandler.errors.add(new Error("b", constDef.getIdent().getLineNum()));
             } else {
                 int dimension = constDef.getConstExp() == null ? 0 : constDef.getConstExp().size();
-                currentTable.symbolMap.put(name, new Def(name, true, dimension));
+                int size1 = 0, size2 = 0;
+                if (dimension == 1) {
+                    size1 = constDef.getConstExp().get(0).calValue();
+                } else if (dimension == 2) {
+                    size1 = constDef.getConstExp().get(0).calValue();
+                    size2 = constDef.getConstExp().get(0).calValue();
+                }
+                Def def = new Def(name, true, dimension, size1, size2);
+                currentTable.symbolMap.put(name, def);
+                if (dimension == 0) {
+                    def.setInitVal(constDef.getConstInitVal().getConstExp().calValue());
+                } else if (dimension == 1) {
+                    ArrayList<Integer> tmpList = def.getInitArrayVal();
+                    ArrayList<ConstInitVal> initList = constDef.getConstInitVal().getConstInitVal();
+                    for (int i = 0; i < size1; i++) {
+                        tmpList.add(initList.get(i).getConstExp().calValue());
+                    }
+                } else {
+                    ArrayList<Integer> tmpList = def.getInitArrayVal();
+                    ArrayList<ConstInitVal> initList1 = constDef.getConstInitVal().getConstInitVal();
+                    for (int i = 0; i < size1; i++) {
+                        ArrayList<ConstInitVal> initList2 = initList1.get(i).getConstInitVal();
+                        for (int j = 0; j < size2; j++) {
+                            tmpList.add(initList2.get(j).getConstExp().calValue());
+                        }
+                    }
+                }
             }
         } else if (node instanceof VarDef) {
             VarDef varDef = (VarDef)node;
@@ -43,7 +69,39 @@ public class SymGenerator {
                 ErrHandler.errors.add(new Error("b", varDef.getIdent().getLineNum()));
             } else {
                 int dimension = varDef.getConstExp() == null ? 0 : varDef.getConstExp().size();
-                currentTable.symbolMap.put(name, new Def(name, false, dimension));
+                int size1 = 0, size2 = 0;
+                if (dimension == 1) {
+                    size1 = varDef.getConstExp().get(0).calValue();
+                } else if (dimension == 2) {
+                    size1 = varDef.getConstExp().get(0).calValue();
+                    size2 = varDef.getConstExp().get(0).calValue();
+                }
+                Def def = new Def(name, false, dimension, size1, size2);
+                currentTable.symbolMap.put(name, def);
+                if (currentTable.getDepth() == 0) {
+                    if (varDef.getInitVal() != null ) {
+                        if (dimension == 0) {
+                            def.setInitVal(varDef.getInitVal().getExp().calValue());
+                        } else if (dimension == 1) {
+                            ArrayList<Integer> tmpList = def.getInitArrayVal();
+                            ArrayList<InitVal> initList = varDef.getInitVal().getInitVal();
+                            for (int i = 0; i < size1; i++) {
+                                tmpList.add(initList.get(i).getExp().calValue());
+                            }
+                        } else {
+                            ArrayList<Integer> tmpList = def.getInitArrayVal();
+                            ArrayList<InitVal> initList1 = varDef.getInitVal().getInitVal();
+                            for (int i = 0; i < size1; i++) {
+                                ArrayList<InitVal> initList2 = initList1.get(i).getInitVal();
+                                for (int j = 0; j < size2; j++) {
+                                    tmpList.add(initList2.get(j).getExp().calValue());
+                                }
+                            }
+                        }
+                    } else {
+                        def.setZeroInit(true);
+                    }
+                }
             }
         // ------------------------------------------------------------------------------------------------ 函数
         } else if (node instanceof FuncDef) {
@@ -64,7 +122,7 @@ public class SymGenerator {
                 int paramNum = funcDef.getFuncFParams() == null ? 0 : funcDef.getFuncFParams().getFuncFParam().size();
                 currentTable.symbolMap.put(name, new Func(name, isVoid, paramNum, paramDimension));
             }
-            SymTable tmpTable = new SymTable(currentTable, true, isVoid);
+            SymTable tmpTable = new SymTable(currentTable, true, isVoid, currentTable.depth + 1);
             currentTable = tmpTable;
             table.put(funcDef.getBlock(), currentTable);
         } else if (node instanceof MainFuncDef) {
@@ -74,7 +132,7 @@ public class SymGenerator {
             } else {
                 currentTable.symbolMap.put("main", new Func("main", false, 0, null));
             }
-            SymTable tmpTable = new SymTable(currentTable, true, false);
+            SymTable tmpTable = new SymTable(currentTable, true, false, currentTable.depth + 1);
             currentTable = tmpTable;
             table.put(mainFuncDef.getBlock(), currentTable);
         // ------------------------------------------------------------------------------------------------ 形参
@@ -84,14 +142,18 @@ public class SymGenerator {
             if (currentTable.findSymbol(name, false)) {
                 ErrHandler.errors.add(new Error("b", funcFParam.getIdent().getLineNum()));
             } else {
-                int dimension = funcFParam.getType() == 1 ? 1 : 0;
-                currentTable.symbolMap.put(name, new FuncParam(name, dimension));
+                int dimension = funcFParam.getType();
+                int size = 0;
+                if (funcFParam.getConstExp() != null) {
+                    size = funcFParam.getConstExp().calValue();
+                }
+                currentTable.symbolMap.put(name, new FuncParam(name, dimension, size));
             }
         // ------------------------------------------------------------------------------------------------ 使用
         } else if (node instanceof Stmt) {
             Stmt stmt = (Stmt)node;
             if (stmt.getType() == 0) {
-                SymTable tmpTable = new SymTable(currentTable, false, false);
+                SymTable tmpTable = new SymTable(currentTable, false, false, currentTable.depth + 1);
                 currentTable = tmpTable;
                 table.put(stmt.getBlock(), currentTable);
             } else if (stmt.getType() == 5) {
@@ -167,7 +229,25 @@ public class SymGenerator {
                     }
                 }
             }
-        }
+        // ------------------------------------------------------------------------------------------------ 填值
+        } /*else if (node instanceof PrimaryExp && ((PrimaryExp)node).getLval() != null) {
+            PrimaryExp primaryExp = ((PrimaryExp)node);
+            Lval lval = primaryExp.getLval();
+            Symbol symbol = currentTable.getSymbol(lval.getIdent().getSrc(), true);
+            if (symbol instanceof Def && ((Def) symbol).isConst()) {
+                Def def = ((Def)symbol);
+                if (def.getDimension() == 0) {
+                    primaryExp.setLvalValue(def.getInitVal());
+                } else if (def.getDimension() == 1) {
+                    int index1 = lval.getExp().get(0).calValue();
+                    primaryExp.setLvalValue(def.getInitArrayVal().get(index1));
+                } else {
+                    int index1 = lval.getExp().get(0).calValue();
+                    int index2 = lval.getExp().get(1).calValue();
+                    primaryExp.setLvalValue(def.getInitArrayVal().get(index1 * def.getSize1() + index2));
+                }
+            }
+        }*/
 
         for (Node value : node.getChild()) {
             generate(value, inLoop);

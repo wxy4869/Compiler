@@ -63,6 +63,24 @@ public class UnaryExp implements Node{
         }
     }
 
+    /* UnaryExp     -> PrimaryExp
+     *              | Ident '(' [FuncRParams] ')'  这种情况在计算 ConstExp 时不会出现
+     *              | UnaryOp UnaryExp
+     */
+    public int calValue() {
+        if (primaryExp != null) {
+            return primaryExp.calValue();
+        } else {
+            if (unaryOp.getOp().getSrc().equals("+")) {
+                return unaryExp.calValue();
+            } else if (unaryOp.getOp().getSrc().equals("-")) {
+                return -unaryExp.calValue();
+            } else {
+                return (unaryExp.calValue() == 0) ? 0 : 1;
+            }
+        }
+    }
+
     public PrimaryExp getPrimaryExp() {
         return primaryExp;
     }

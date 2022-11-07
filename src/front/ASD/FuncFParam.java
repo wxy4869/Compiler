@@ -10,6 +10,11 @@ public class FuncFParam implements Node{
     private ConstExp constExp;
     private int type;
 
+    /* type = 0     int a       i32 %0
+     * type = 1     int a[]     i32* %0
+     * type = 2     int a[][3]  [3 x i32]* %0
+     */
+
     public FuncFParam(Token ident, ConstExp constExp, int type) {
         this.ident = ident;
         this.constExp = constExp;

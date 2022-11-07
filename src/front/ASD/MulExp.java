@@ -36,6 +36,21 @@ public class MulExp implements Node{
         return unaryExp.get(0).getDimension();
     }
 
+    public int calValue() {
+        int value = unaryExp.get(0).calValue();
+        int size = unaryExp.size();
+        for (int i = 1; i < size; i++) {
+            if (ops.get(i - 1).getSrc().equals("*")) {
+                value *= unaryExp.get(i).calValue();
+            } else if (ops.get(i - 1).getSrc().equals("/")) {
+                value /= unaryExp.get(i).calValue();
+            } else {
+                value %= unaryExp.get(i).calValue();
+            }
+        }
+        return value;
+    }
+
     public ArrayList<UnaryExp> getUnaryExp() {
         return unaryExp;
     }

@@ -30,11 +30,30 @@ public class IOUtils {
         return s.toString();
     }
 
-    public static void write(String s) {
-        File file = new File("error.txt");  // 词法分析、语法分析时 pathname=output.txt, 错误处理时 pathname=error.txt
+    public static void write(String s) {  // 语法分析专用
+        File file = new File("output.txt");
         BufferedWriter writer = null;
         try {
-            writer = new BufferedWriter(new FileWriter(file, false));  // 语法分析时 append = true, 词法分析、错误处理时 append = false
+            writer = new BufferedWriter(new FileWriter(file, true));
+            writer.write(s);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public static void write(String s, String path, boolean append) {
+        File file = new File(path);
+        BufferedWriter writer = null;
+        try {
+            writer = new BufferedWriter(new FileWriter(file, append));
             writer.write(s);
         } catch (Exception e) {
             e.printStackTrace();
