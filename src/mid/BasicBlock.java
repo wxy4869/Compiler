@@ -9,12 +9,12 @@ import java.util.ArrayList;
 public class BasicBlock extends Value{
     Function parent;
     ArrayList<Inst> insts;
+    boolean isEnd;
 
     public BasicBlock(String name, Function parent) {
         super(name, null);
         this.parent = parent;
         this.insts = new ArrayList<>();
-        this.parent.getBasicBlocks().add(this);
     }
 
     public void printMoi(String path) {
@@ -38,5 +38,13 @@ public class BasicBlock extends Value{
 
     public void setInsts(ArrayList<Inst> insts) {
         this.insts = insts;
+    }
+
+    public boolean isEnd() {
+        return isEnd;
+    }
+
+    public void setEnd(boolean end) {
+        isEnd = end;
     }
 }

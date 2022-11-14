@@ -39,7 +39,7 @@ public class SymGenerator {
                     size1 = constDef.getConstExp().get(0).calValue();
                 } else if (dimension == 2) {
                     size1 = constDef.getConstExp().get(0).calValue();
-                    size2 = constDef.getConstExp().get(0).calValue();
+                    size2 = constDef.getConstExp().get(1).calValue();
                 }
                 Def def = new Def(name, true, dimension, size1, size2);
                 currentTable.symbolMap.put(name, def);
@@ -74,7 +74,7 @@ public class SymGenerator {
                     size1 = varDef.getConstExp().get(0).calValue();
                 } else if (dimension == 2) {
                     size1 = varDef.getConstExp().get(0).calValue();
-                    size2 = varDef.getConstExp().get(0).calValue();
+                    size2 = varDef.getConstExp().get(1).calValue();
                 }
                 Def def = new Def(name, false, dimension, size1, size2);
                 currentTable.symbolMap.put(name, def);
@@ -122,8 +122,7 @@ public class SymGenerator {
                 int paramNum = funcDef.getFuncFParams() == null ? 0 : funcDef.getFuncFParams().getFuncFParam().size();
                 currentTable.symbolMap.put(name, new Func(name, isVoid, paramNum, paramDimension));
             }
-            SymTable tmpTable = new SymTable(currentTable, true, isVoid, currentTable.depth + 1);
-            currentTable = tmpTable;
+            currentTable = new SymTable(currentTable, true, isVoid, currentTable.depth + 1);
             table.put(funcDef.getBlock(), currentTable);
         } else if (node instanceof MainFuncDef) {
             MainFuncDef mainFuncDef = (MainFuncDef)node;
@@ -132,8 +131,7 @@ public class SymGenerator {
             } else {
                 currentTable.symbolMap.put("main", new Func("main", false, 0, null));
             }
-            SymTable tmpTable = new SymTable(currentTable, true, false, currentTable.depth + 1);
-            currentTable = tmpTable;
+            currentTable = new SymTable(currentTable, true, false, currentTable.depth + 1);
             table.put(mainFuncDef.getBlock(), currentTable);
         // ------------------------------------------------------------------------------------------------ 形参
         } else if (node instanceof FuncFParam) {
@@ -153,8 +151,7 @@ public class SymGenerator {
         } else if (node instanceof Stmt) {
             Stmt stmt = (Stmt)node;
             if (stmt.getType() == 0) {
-                SymTable tmpTable = new SymTable(currentTable, false, false, currentTable.depth + 1);
-                currentTable = tmpTable;
+                currentTable = new SymTable(currentTable, false, false, currentTable.depth + 1);
                 table.put(stmt.getBlock(), currentTable);
             } else if (stmt.getType() == 5) {
                 if (currentTable.isFunc && currentTable.isVoid && stmt.getExp() != null) {
@@ -229,25 +226,7 @@ public class SymGenerator {
                     }
                 }
             }
-        // ------------------------------------------------------------------------------------------------ 填值
-        } /*else if (node instanceof PrimaryExp && ((PrimaryExp)node).getLval() != null) {
-            PrimaryExp primaryExp = ((PrimaryExp)node);
-            Lval lval = primaryExp.getLval();
-            Symbol symbol = currentTable.getSymbol(lval.getIdent().getSrc(), true);
-            if (symbol instanceof Def && ((Def) symbol).isConst()) {
-                Def def = ((Def)symbol);
-                if (def.getDimension() == 0) {
-                    primaryExp.setLvalValue(def.getInitVal());
-                } else if (def.getDimension() == 1) {
-                    int index1 = lval.getExp().get(0).calValue();
-                    primaryExp.setLvalValue(def.getInitArrayVal().get(index1));
-                } else {
-                    int index1 = lval.getExp().get(0).calValue();
-                    int index2 = lval.getExp().get(1).calValue();
-                    primaryExp.setLvalValue(def.getInitArrayVal().get(index1 * def.getSize1() + index2));
-                }
-            }
-        }*/
+        }
 
         for (Node value : node.getChild()) {
             generate(value, inLoop);

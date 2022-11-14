@@ -6,7 +6,7 @@ import mid.Value;
 import java.util.Locale;
 
 public class BinaryInst extends Inst {
-    // <dst.name> = add <dst.type> <src1.name>, <src2.name>
+    // <dst.name> = add <src1.type> <src1.name>, <src2.name>
     Tag tag;
     Value dst;
     Value src1;
@@ -26,14 +26,13 @@ public class BinaryInst extends Inst {
         MUL,    // *
         SDIV,   // /
         SREM,   // %
-        /*
-        LT,     // <
-        LE,     // <=
-        GT,     // >
-        GE,     // >=
+
+        SLT,     // <
+        SGT,     // >
+        SLE,     // <=
+        SGE,     // >=
         EQ,     // ==
         NE,     // !=
-        */
     }
 
     @Override
@@ -42,9 +41,9 @@ public class BinaryInst extends Inst {
         if (tag == Tag.ADD || tag == Tag.SUB || tag == Tag.MUL || tag == Tag.SDIV || tag == Tag.SREM) {
             op = tag.name().toLowerCase(Locale.ROOT);
         } else {
-            op = "icmp";
+            op = String.format("icmp %s", tag.name().toLowerCase(Locale.ROOT));
         }
-        return String.format("%s = %s %s %s, %s", dst.getName(), op, dst.getType(), src1.getName(), src2.getName());
+        return String.format("%s = %s %s %s, %s", dst.getName(), op, src1.getType(), src1.getName(), src2.getName());
     }
 
     public Tag getTag() {

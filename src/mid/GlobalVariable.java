@@ -59,14 +59,16 @@ public class GlobalVariable extends User{
                         initStr.append(arrayType1.getInnerType().toString());
                         initStr.append(" [");
                         ArrayType arrayType2 = (ArrayType) arrayType1.getInnerType();
-                        for (int j = 0; j < size1; j++) {
-                            initStr.append(arrayType2.getInnerType().toString()).append(" ").append(initArrayVal.get(i * size1 + j));
-                            if (j != size1 - 1) {
+                        for (int j = 0; j < size2; j++) {
+                            initStr.append(arrayType2.getInnerType().toString()).append(" ").append(initArrayVal.get(i * size2 + j));
+                            if (j != size2 - 1) {
                                 initStr.append(", ");
                             }
                         }
                         if (i != size1 - 1) {
                             initStr.append("], ");
+                        } else {
+                            initStr.append("]");
                         }
                     }
                     initStr.append("]");

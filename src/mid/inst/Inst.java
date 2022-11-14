@@ -8,7 +8,9 @@ public abstract class Inst extends User {
 
     public Inst(BasicBlock parent) {
         this.parent = parent;
-        this.parent.getInsts().add(this);
+        if (!this.parent.isEnd()) {
+            this.parent.getInsts().add(this);
+        }
     }
 
     public BasicBlock getParent() {
