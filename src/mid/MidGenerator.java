@@ -27,6 +27,10 @@ public class MidGenerator {
         this.currentSymTable = SymGenerator.table.get(SynAnalyzer.root);
     }
 
+    public void generate(Node node) {
+        CompUnitVisitor((CompUnit)node);
+    }
+
     public void CompUnitVisitor(CompUnit node) {
         for (Decl value : node.getDecl()) {
             DeclVisitor(value);
@@ -406,104 +410,12 @@ public class MidGenerator {
         return LOrExpVisitor(node.getlOrExp(), trueBlock, falseBlock);
     }
 
-    /**
-     * isLeft = true 的情况
+    /* isLeft = true 的情况
      *      Stmt -> Lval '=' Exp ';'
      *      Stmt -> Lval '=' 'getint' '(' ')' ';'
      * isLeft = false 的情况
      *      PrimaryExp -> Lval
      */
-    /* public Value LvalVisitor(Lval node, boolean isLeft) {
-        Symbol symbol = currentSymTable.getSymbol(node.getIdent().getSrc(), true);
-        Value src;
-        Value dst;
-        int dimension;
-        if (symbol instanceof Def) {
-            src = ((Def)symbol).getAddr();
-            dimension = ((Def)symbol).getDimension();
-        } else {
-            src = ((FuncParam)symbol).getAddr();
-            dimension = ((FuncParam)symbol).getDimension();
-        }
-        if (dimension == 0) {
-            if (isLeft) {
-                return src;
-            } else {
-                dst = new Value("%" + regID, new BaseType(BaseType.Tag.I32));
-                regID++;
-                new LoadInst(currentBasicBlock, src, dst);
-                return dst;
-            }
-        } else if (dimension == 1) {
-            Value mid, tmp;
-            if (node.getExp().size() == 0) {
-                tmp = new Value("%" + regID, new PointerType(new BaseType(BaseType.Tag.I32)));
-                regID++;
-                new LoadInst(currentBasicBlock, src, tmp);
-                mid = new Value("%" + regID, new PointerType(new BaseType(BaseType.Tag.I32)));
-                regID++;
-                new GEPInst(currentBasicBlock, mid, tmp, null);
-                if (isLeft) {
-                    return mid;
-                } else {
-                    dst = new Value("%" + regID, new PointerType(new BaseType(BaseType.Tag.I32)));
-                    regID++;
-                    new LoadInst(currentBasicBlock, mid, dst);
-                    return dst;
-                }
-            } else {
-                ArrayList<Value> indexs = new ArrayList<>();
-                indexs.add(ExpVisitor(node.getExp().get(0)));
-                mid = new Value("%" + regID, new BaseType(BaseType.Tag.I32));
-                regID++;
-                new GEPInst(currentBasicBlock, mid, src, indexs);
-                if (isLeft) {
-                    return mid;
-                } else {
-                    dst = new Value("%" + regID, new BaseType(BaseType.Tag.I32));
-                    regID++;
-                    new LoadInst(currentBasicBlock, mid, dst);
-                    return dst;
-                }
-            }
-        } else {
-            Value mid;
-            if (node.getExp().size() == 1) {
-                ArrayList<Value> indexs = new ArrayList<>();
-                indexs.add(ExpVisitor(node.getExp().get(0)));
-                Type midType = (src.getType() instanceof PointerType) ?
-                        ((PointerType)src.getType()).getInnerType() : ((ArrayType)src.getType()).getInnerType();
-                mid = new Value("%" + regID, midType);
-                regID++;
-                new GEPInst(currentBasicBlock, mid, src, indexs);
-                if (isLeft) {
-                    return mid;
-                } else {
-                    dst = new Value("%" + regID, midType);
-                    regID++;
-                    new LoadInst(currentBasicBlock, mid, dst);
-                    return dst;
-                }
-            } else {
-                ArrayList<Value> indexs = new ArrayList<>();
-                int size = node.getExp().size();
-                for (int i = 0; i < size; i++) {
-                    indexs.add(ExpVisitor(node.getExp().get(i)));
-                }
-                mid = new Value("%" + regID, new BaseType(BaseType.Tag.I32));
-                regID++;
-                new GEPInst(currentBasicBlock, mid, src, indexs);
-                if (isLeft) {
-                    return mid;
-                } else {
-                    dst = new Value("%" + regID, new BaseType(BaseType.Tag.I32));
-                    regID++;
-                    new LoadInst(currentBasicBlock, mid, dst);
-                    return dst;
-                }
-            }
-        }
-    } */
     public Value LvalVisitor(Lval node, boolean isLeft) {
         Symbol symbol = currentSymTable.getSymbol(node.getIdent().getSrc(), true, node.getIdent().getLineNum());
         if (symbol instanceof Def) {

@@ -12,7 +12,8 @@ public class Compiler {
     public static int op = 4; // 1 词法分析 2 语法分析 3 错误处理 4 中间代码
 
     public static void main(String [] args) {
-        LexAnalyzer.analyze(IOUtils.read());
+        LexAnalyzer lexAnalyzer = new LexAnalyzer();
+        lexAnalyzer.analyze(IOUtils.read());
         if (op == 1) {
             StringBuilder s = new StringBuilder();
             for (Token token: LexAnalyzer.tokens) {
@@ -42,7 +43,7 @@ public class Compiler {
         }
 
         MidGenerator midGenerator = new MidGenerator();
-        midGenerator.CompUnitVisitor((CompUnit)SynAnalyzer.root);
+        midGenerator.generate(SynAnalyzer.root);
         if (op == 4) {
             Module.module.printMoi("llvm_ir.txt");
         }

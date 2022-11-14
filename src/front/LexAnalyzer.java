@@ -7,7 +7,7 @@ public class LexAnalyzer {
     public static ArrayList<Token> tokens = new ArrayList<>();
     public static HashMap<String, String> table = new HashMap<>();
 
-    public static void analyze(String s) {
+    public void analyze(String s) {
         init();
 
         int lineNum = 1;
