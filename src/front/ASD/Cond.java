@@ -5,6 +5,7 @@ import utils.IOUtils;
 import java.util.ArrayList;
 
 public class Cond implements Node{
+    // Cond -> LOrExp
     private LOrExp lOrExp;
 
     public Cond(LOrExp lOrExp) {
@@ -14,7 +15,7 @@ public class Cond implements Node{
     @Override
     public void printMoi() {
         lOrExp.printMoi();
-        IOUtils.write("<Cond>\n");
+        IOUtils.write("<Cond>\n", "output.txt", true);
     }
 
     @Override

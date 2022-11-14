@@ -7,6 +7,7 @@ import utils.Pair;
 import java.util.ArrayList;
 
 public class UnaryExp implements Node{
+    // UnaryExp -> PrimaryExp | Ident '(' [FuncRParams] ')' | UnaryOp UnaryExp
     private PrimaryExp primaryExp;
     private Token ident;
     private FuncRParams funcRParams;
@@ -26,17 +27,17 @@ public class UnaryExp implements Node{
         if (primaryExp != null) {
             primaryExp.printMoi();
         } else if (ident != null) {
-            IOUtils.write(ident.toString());
-            IOUtils.write("LPARENT (\n");
+            IOUtils.write(ident.toString(), "output.txt", true);
+            IOUtils.write("LPARENT (\n", "output.txt", true);
             if (funcRParams != null) {
                 funcRParams.printMoi();
             }
-            IOUtils.write("RPARENT )\n");
+            IOUtils.write("RPARENT )\n", "output.txt", true);
         } else {
             unaryOp.printMoi();
             unaryExp.printMoi();
         }
-        IOUtils.write("<UnaryExp>\n");
+        IOUtils.write("<UnaryExp>\n", "output.txt", true);
     }
 
     @Override

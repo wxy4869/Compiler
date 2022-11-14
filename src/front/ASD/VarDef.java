@@ -6,6 +6,7 @@ import utils.IOUtils;
 import java.util.ArrayList;
 
 public class VarDef implements Node{
+    // VarDef -> Ident { '[' ConstExp ']' } | Ident { '[' ConstExp ']' } '=' InitVal
     private Token ident;
     private ArrayList<ConstExp> constExp;
     private InitVal initVal;
@@ -18,17 +19,17 @@ public class VarDef implements Node{
 
     @Override
     public void printMoi() {
-        IOUtils.write(ident.toString());
+        IOUtils.write(ident.toString(), "output.txt", true);
         for (ConstExp value : constExp) {
-            IOUtils.write("LBRACK [\n");
+            IOUtils.write("LBRACK [\n", "output.txt", true);
             value.printMoi();
-            IOUtils.write("RBRACK ]\n");
+            IOUtils.write("RBRACK ]\n", "output.txt", true);
         }
         if (initVal != null) {
-            IOUtils.write("ASSIGN =\n");
+            IOUtils.write("ASSIGN =\n", "output.txt", true);
             initVal.printMoi();
         }
-        IOUtils.write("<VarDef>\n");
+        IOUtils.write("<VarDef>\n", "output.txt", true);
     }
 
     @Override

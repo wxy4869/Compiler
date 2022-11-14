@@ -6,6 +6,7 @@ import utils.IOUtils;
 import java.util.ArrayList;
 
 public class Number implements Node{
+    // Number -> IntConst
     private Token number;
 
     public Number(Token number) {
@@ -14,8 +15,8 @@ public class Number implements Node{
 
     @Override
     public void printMoi() {
-        IOUtils.write(number.toString());
-        IOUtils.write("<Number>\n");
+        IOUtils.write(number.toString(), "output.txt", true);
+        IOUtils.write("<Number>\n", "output.txt", true);
     }
 
     @Override

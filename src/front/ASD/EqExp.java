@@ -6,6 +6,7 @@ import utils.IOUtils;
 import java.util.ArrayList;
 
 public class EqExp implements Node{
+    // EqExp -> RelExp | EqExp ('==' | '!=') RelExp
     private ArrayList<RelExp> relExp;
     private ArrayList<Token> ops;
 
@@ -19,9 +20,9 @@ public class EqExp implements Node{
         int size = relExp.size();
         for (int i = 0; i < size; i++) {
             relExp.get(i).printMoi();
-            IOUtils.write("<EqExp>\n");
+            IOUtils.write("<EqExp>\n", "output.txt", true);
             if (i < size - 1) {
-                IOUtils.write(ops.get(i).toString());
+                IOUtils.write(ops.get(i).toString(), "output.txt", true);
             }
         }
     }

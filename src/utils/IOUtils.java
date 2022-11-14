@@ -30,25 +30,6 @@ public class IOUtils {
         return s.toString();
     }
 
-    public static void write(String s) {  // 语法分析专用
-        File file = new File("output.txt");
-        BufferedWriter writer = null;
-        try {
-            writer = new BufferedWriter(new FileWriter(file, true));
-            writer.write(s);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (writer != null) {
-                try {
-                    writer.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
     public static void write(String s, String path, boolean append) {
         File file = new File(path);
         BufferedWriter writer = null;

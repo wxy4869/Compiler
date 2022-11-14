@@ -5,6 +5,7 @@ import utils.IOUtils;
 import java.util.ArrayList;
 
 public class InitVal implements Node{
+    // InitVal -> Exp | '{' [ InitVal { ',' InitVal } ] '}
     private Exp exp;
     private ArrayList<InitVal> initVal;
 
@@ -18,18 +19,18 @@ public class InitVal implements Node{
         if (exp != null) {
             exp.printMoi();
         } else {
-            IOUtils.write("LBRACE {\n");
+            IOUtils.write("LBRACE {\n", "output.txt", true);
             int size = initVal.size();
             if (size > 0) {
                 initVal.get(0).printMoi();
                 for (int i = 1; i < size; i++) {
-                    IOUtils.write("COMMA ,\n");
+                    IOUtils.write("COMMA ,\n", "output.txt", true);
                     initVal.get(i).printMoi();
                 }
             }
-            IOUtils.write("RBRACE }\n");
+            IOUtils.write("RBRACE }\n", "output.txt", true);
         }
-        IOUtils.write("<InitVal>\n");
+        IOUtils.write("<InitVal>\n", "output.txt", true);
     }
 
     @Override

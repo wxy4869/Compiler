@@ -7,6 +7,7 @@ import utils.Pair;
 import java.util.ArrayList;
 
 public class Exp implements Node{
+    // Exp -> AddExp
     private AddExp addExp;
 
     public Exp(AddExp addExp) {
@@ -16,7 +17,7 @@ public class Exp implements Node{
     @Override
     public void printMoi() {
         addExp.printMoi();
-        IOUtils.write("<Exp>\n");
+        IOUtils.write("<Exp>\n", "output.txt", true);
     }
 
     @Override

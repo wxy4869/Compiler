@@ -8,6 +8,7 @@ import utils.IOUtils;
 import java.util.ArrayList;
 
 public class Lval implements Node{
+    // Lval -> Ident {'[' Exp ']'}
     private Token ident;
     private ArrayList<Exp> exp;
 
@@ -18,13 +19,13 @@ public class Lval implements Node{
 
     @Override
     public void printMoi() {
-        IOUtils.write(ident.toString());
+        IOUtils.write(ident.toString(), "output.txt", true);
         for (Exp value : exp) {
-            IOUtils.write("LBRACK [\n");
+            IOUtils.write("LBRACK [\n", "output.txt", true);
             value.printMoi();
-            IOUtils.write("RBRACK ]\n");
+            IOUtils.write("RBRACK ]\n", "output.txt", true);
         }
-        IOUtils.write("<LVal>\n");
+        IOUtils.write("<LVal>\n", "output.txt", true);
     }
 
     @Override
@@ -33,16 +34,19 @@ public class Lval implements Node{
     }
 
     public int calValue() {
-        Def def = (Def) SymGenerator.currentTable.getSymbol(ident.getSrc(), true);
+        Def def = (Def) SymGenerator.currentTable.getSymbol(ident.getSrc(), true, ident.getLineNum());
+        int dimension = def.getDimension();
         if (def.getDimension() == 0) {
             return def.getInitVal();
-        } else if (def.getDimension() == 1) {
-            int index1 = exp.get(0).calValue();
-            return def.getInitArrayVal().get(index1);
         } else {
-            int index1 = exp.get(0).calValue();
-            int index2 = exp.get(1).calValue();
-            return def.getInitArrayVal().get(index1 * def.getSize1() + index2);
+            ArrayList<Integer> size = def.getSize();
+            int sum = 0, mul = 1;
+            for (int i = dimension - 1; i >= 0; i--) {
+                int index = exp.get(i).calValue();
+                sum += index * mul;
+                mul *= size.get(i);
+            }
+            return  def.getInitArrayVal().get(sum);
         }
     }
 

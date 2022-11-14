@@ -6,6 +6,7 @@ import utils.IOUtils;
 import java.util.ArrayList;
 
 public class RelExp implements Node{
+    // RelExp -> AddExp | RelExp ('<' | '>' | '<=' | '>=') AddExp
     private ArrayList<AddExp> addExp;
     private ArrayList<Token> ops;
 
@@ -19,9 +20,9 @@ public class RelExp implements Node{
         int size = addExp.size();
         for (int i = 0; i < size; i++) {
             addExp.get(i).printMoi();
-            IOUtils.write("<RelExp>\n");
+            IOUtils.write("<RelExp>\n", "output.txt", true);
             if (i < size - 1) {
-                IOUtils.write(ops.get(i).toString());
+                IOUtils.write(ops.get(i).toString(), "output.txt", true);
             }
         }
     }

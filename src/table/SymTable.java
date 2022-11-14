@@ -8,7 +8,7 @@ public class SymTable {
     SymTable parent;
     boolean isFunc;
     boolean isVoid;
-    int depth;
+    int depth;  // 用于判断是否为全局变量
 
     public SymTable(SymTable parent, boolean isFunc, boolean isVoid, int depth) {
         this.symbolMap = new HashMap<>();
@@ -18,7 +18,7 @@ public class SymTable {
         this.depth = depth;
     }
 
-    public boolean findSymbol(String symbol, boolean inParent) {
+    /*public boolean findSymbol(String symbol, boolean inParent) {
         if (symbolMap.containsKey(symbol)) {
             return true;
         } else if (inParent && parent != null) {
@@ -32,6 +32,18 @@ public class SymTable {
             return symbolMap.get(symbol);
         } else if (inParent && parent != null) {
             return parent.getSymbol(symbol, inParent);
+        }
+        return null;
+    }*/
+
+    public Symbol getSymbol(String name, boolean inParent, int lineNum) {
+        if (symbolMap.containsKey(name)) {
+            Symbol symbol = symbolMap.get(name);
+            if (symbol.getLineNum() <= lineNum) {
+                return symbol;
+            }
+        } else if (inParent && parent != null) {
+            return parent.getSymbol(name, inParent, lineNum);
         }
         return null;
     }

@@ -6,56 +6,47 @@ import utils.IOUtils;
 import java.util.ArrayList;
 
 public class FuncFParam implements Node{
+    // FuncFParam -> BType Ident ['[' ']' { '[' ConstExp ']' }]
     private Token ident;
-    private ConstExp constExp;
-    private int type;
+    private ArrayList<ConstExp> constExp;
+    boolean isPointer;
 
-    /* type = 0     int a       i32 %0
-     * type = 1     int a[]     i32* %0
-     * type = 2     int a[][3]  [3 x i32]* %0
-     */
-
-    public FuncFParam(Token ident, ConstExp constExp, int type) {
+    public FuncFParam(Token ident, ArrayList<ConstExp> constExp, Boolean isPointer) {
         this.ident = ident;
         this.constExp = constExp;
-        this.type = type;
+        this.isPointer = isPointer;
     }
 
     @Override
     public void printMoi() {
-        IOUtils.write("INTTK int\n");
-        IOUtils.write(ident.toString());
-        if (type == 1) {
-            IOUtils.write("LBRACK [\n");
-            IOUtils.write("RBRACK ]\n");
-        } else if (type == 2) {
-            IOUtils.write("LBRACK [\n");
-            IOUtils.write("RBRACK ]\n");
-            IOUtils.write("LBRACK [\n");
-            constExp.printMoi();
-            IOUtils.write("RBRACK ]\n");
+        IOUtils.write("INTTK int\n", "output.txt", true);
+        IOUtils.write(ident.toString(), "output.txt", true);
+        if (isPointer) {
+            IOUtils.write("LBRACK [\n", "output.txt", true);
+            IOUtils.write("RBRACK ]\n", "output.txt", true);
+            for (ConstExp value : constExp) {
+                IOUtils.write("LBRACK [\n", "output.txt", true);
+                value.printMoi();
+                IOUtils.write("RBRACK ]\n", "output.txt", true);
+            }
         }
-        IOUtils.write("<FuncFParam>\n");
+        IOUtils.write("<FuncFParam>\n", "output.txt", true);
     }
 
     @Override
     public ArrayList<Node> getChild() {
-        ArrayList<Node> child = new ArrayList<>();
-        if (type == 2) {
-            child.add(constExp);
-        }
-        return child;
+        return new ArrayList<>(constExp);
     }
 
     public Token getIdent() {
         return ident;
     }
 
-    public ConstExp getConstExp() {
+    public ArrayList<ConstExp> getConstExp() {
         return constExp;
     }
 
-    public int getType() {
-        return type;
+    public boolean isPointer() {
+        return isPointer;
     }
 }

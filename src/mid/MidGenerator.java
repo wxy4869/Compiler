@@ -53,20 +53,20 @@ public class MidGenerator {
     }
 
     public void ConstDefVisitor(ConstDef node) {
-        Def def = (Def)currentSymTable.getSymbol(node.getIdent().getSrc(), false);
+        Def def = (Def)currentSymTable.getSymbol(node.getIdent().getSrc(), false, node.getIdent().getLineNum());
         String name;
         Type type;
         if (def.getDimension() == 0) {
             type = new BaseType(BaseType.Tag.I32);
         } else if (def.getDimension() == 1) {
-            type = new ArrayType(def.getSize1(), new BaseType(BaseType.Tag.I32));
+            type = new ArrayType(def.getSize().get(0), new BaseType(BaseType.Tag.I32));
         } else {
-            type = new ArrayType(def.getSize1(), new ArrayType(def.getSize2(), new BaseType(BaseType.Tag.I32)));
+            type = new ArrayType(def.getSize().get(0), new ArrayType(def.getSize().get(1), new BaseType(BaseType.Tag.I32)));
         }
         if (currentSymTable.getDepth() == 0) {
             name = "@" + node.getIdent().getSrc();
             new GlobalVariable(name, type, true,
-                    def.getSize1(), def.getSize2(),
+                    def.getSize().get(0), def.getSize().get(1),
                     def.getInitVal(), def.getInitArrayVal(), false);
             def.setAddr(new Value(name, type));
         } else {
@@ -84,7 +84,7 @@ public class MidGenerator {
             Value src = new Value(Integer.toString(def.getInitVal()), new BaseType(BaseType.Tag.I32));
             new StoreInst(currentBasicBlock, src, value);
         } else if (def.getDimension() == 1) {
-            int size1 = def.getSize1();
+            int size1 = def.getSize().get(0);
             ArrayList<Integer> initArrayVal = def.getInitArrayVal();
             for (int i = 0; i < size1; i++) {
                 Value dst = new Value("%" + regID, new BaseType(BaseType.Tag.I32));
@@ -97,8 +97,8 @@ public class MidGenerator {
                 new StoreInst(currentBasicBlock, src, dst);
             }
         } else {
-            int size1 = def.getSize1();
-            int size2 = def.getSize2();
+            int size1 = def.getSize().get(0);
+            int size2 = def.getSize().get(1);
             ArrayList<Integer> initArrayVal = def.getInitArrayVal();
             for (int i = 0; i < size1; i++) {
                 for (int j = 0; j < size2; j++) {
@@ -123,20 +123,20 @@ public class MidGenerator {
     }
 
     public void VarDefVisitor(VarDef node) {
-        Def def = (Def)currentSymTable.getSymbol(node.getIdent().getSrc(), false);
+        Def def = (Def)currentSymTable.getSymbol(node.getIdent().getSrc(), false, node.getIdent().getLineNum());
         String name;
         Type type;
         if (def.getDimension() == 0) {
             type = new BaseType(BaseType.Tag.I32);
         } else if (def.getDimension() == 1) {
-            type = new ArrayType(def.getSize1(), new BaseType(BaseType.Tag.I32));
+            type = new ArrayType(def.getSize().get(0), new BaseType(BaseType.Tag.I32));
         } else {
-            type = new ArrayType(def.getSize1(), new ArrayType(def.getSize2(), new BaseType(BaseType.Tag.I32)));
+            type = new ArrayType(def.getSize().get(0), new ArrayType(def.getSize().get(1), new BaseType(BaseType.Tag.I32)));
         }
         if (currentSymTable.getDepth() == 0) {
             name = "@" + node.getIdent().getSrc();
             new GlobalVariable(name, type, false,
-                    def.getSize1(), def.getSize2(),
+                    def.getSize().get(0), def.getSize().get(1),
                     def.getInitVal(), def.getInitArrayVal(), def.isZeroInit());
             def.setAddr(new Value(name, type));
         } else {
@@ -156,7 +156,7 @@ public class MidGenerator {
             Value src = ExpVisitor(node.getExp());
             new StoreInst(currentBasicBlock, src, value);
         } else if (def.getDimension() == 1) {
-            int size1 = def.getSize1();
+            int size1 = def.getSize().get(0);
             ArrayList<InitVal> initArrayVal = node.getInitVal();
             for (int i = 0; i < size1; i++) {
                 Value dst = new Value("%" + regID, new BaseType(BaseType.Tag.I32));
@@ -169,8 +169,8 @@ public class MidGenerator {
                 new StoreInst(currentBasicBlock, src, dst);
             }
         } else {
-            int size1 = def.getSize1();
-            int size2 = def.getSize2();
+            int size1 = def.getSize().get(0);
+            int size2 = def.getSize().get(1);
             ArrayList<InitVal> initArrayVal1 = node.getInitVal();
             for (int i = 0; i < size1; i++) {
                 ArrayList<InitVal> initArrayVal2 = initArrayVal1.get(i).getInitVal();
@@ -215,7 +215,7 @@ public class MidGenerator {
         }
         BlockVisitor(node.getBlock());
         currentSymTable = currentSymTable.getParent();
-        Func func = (Func)currentSymTable.getSymbol(node.getIdent().getSrc(), true);
+        Func func = (Func)currentSymTable.getSymbol(node.getIdent().getSrc(), true, node.getIdent().getLineNum());
         int size = currentBasicBlock.getInsts().size();
         if ((size == 0 || !(currentBasicBlock.getInsts().get(size - 1) instanceof RetInst)) && func.isVoid()) {
             new RetInst(currentBasicBlock, new Value(null, new BaseType(BaseType.Tag.VOID)));
@@ -243,17 +243,17 @@ public class MidGenerator {
     }
 
     public Pair<Value, FuncParam> FuncFParamVisitor(FuncFParam node) {
-        FuncParam funcParam = (FuncParam)currentSymTable.getSymbol(node.getIdent().getSrc(), false);
+        FuncParam funcParam = (FuncParam)currentSymTable.getSymbol(node.getIdent().getSrc(), false, node.getIdent().getLineNum());
         String paramName = "%" + regID;
         regID++;
         Type type;
         int size;
-        if (node.getType() == 0) {
+        if (!node.isPointer()) {
             type = new BaseType(BaseType.Tag.I32);
-        } else if (node.getType() == 1) {
+        } else if (node.isPointer()) {
             type = new PointerType(new BaseType(BaseType.Tag.I32));
         } else {
-            size = funcParam.getSize();
+            size = funcParam.getSize().get(1);
             type = new PointerType(new ArrayType(size, new BaseType(BaseType.Tag.I32)));
         }
         new Argument(paramName, type, currentFunction);
@@ -505,7 +505,7 @@ public class MidGenerator {
         }
     } */
     public Value LvalVisitor(Lval node, boolean isLeft) {
-        Symbol symbol = currentSymTable.getSymbol(node.getIdent().getSrc(), true);
+        Symbol symbol = currentSymTable.getSymbol(node.getIdent().getSrc(), true, node.getIdent().getLineNum());
         if (symbol instanceof Def) {
             Def def = (Def)symbol;
             Value src = def.getAddr(), tmp;
@@ -602,7 +602,7 @@ public class MidGenerator {
         if (node.getPrimaryExp() != null) {
             return PrimaryExpVisitor(node.getPrimaryExp());
         } else if (node.getIdent() != null) {
-            Func func = (Func)currentSymTable.getSymbol(node.getIdent().getSrc(), true);
+            Func func = (Func)currentSymTable.getSymbol(node.getIdent().getSrc(), true, node.getIdent().getLineNum());
             String funcName = "@" + node.getIdent().getSrc();
             Type funcType;
             Value dst;

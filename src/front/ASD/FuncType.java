@@ -6,6 +6,7 @@ import utils.IOUtils;
 import java.util.ArrayList;
 
 public class FuncType implements Node{
+    // FuncType -> 'void' | 'int'
     private Token funcType;
 
     public FuncType(Token funcType) {
@@ -14,8 +15,8 @@ public class FuncType implements Node{
 
     @Override
     public void printMoi() {
-        IOUtils.write(funcType.toString());
-        IOUtils.write("<FuncType>\n");
+        IOUtils.write(funcType.toString(), "output.txt", true);
+        IOUtils.write("<FuncType>\n", "output.txt", true);
     }
 
     @Override

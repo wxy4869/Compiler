@@ -222,23 +222,22 @@ public class SynAnalyzer {
 
     public FuncFParam FuncFParam() {  // FuncFParam -> BType Ident ['[' ']' { '[' ConstExp ']' }]
         Token ident;
-        ConstExp constExp = null;
-        int type = 0;
+        ArrayList<ConstExp> constExp = new ArrayList<>();
+        boolean isPointer = false;
         nextSym();
         ident = sym(0);
         nextSym();
         if (getSymType(0).equals("LBRACK")) {
-            type = 1;
+            isPointer = true;
             nextSym();
             if (!sym(0).getDst().equals("RBRACK")) {  // 错误处理
                 ErrHandler.errors.add(new Error("k",sym(-1).getLineNum()));
             } else {
                 nextSym();
             }
-            if (getSymType(0).equals("LBRACK")) {
-                type = 2;
+            while (getSymType(0).equals("LBRACK")) {
                 nextSym();
-                constExp = ConstExp();
+                constExp.add(ConstExp());
                 if (!sym(0).getDst().equals("RBRACK")) {  // 错误处理
                     ErrHandler.errors.add(new Error("k",sym(-1).getLineNum()));
                 } else {
@@ -246,7 +245,7 @@ public class SynAnalyzer {
                 }
             }
         }
-        return new FuncFParam(ident, constExp, type);
+        return new FuncFParam(ident, constExp, isPointer);
     }
 
     public Block Block() {  // Block -> '{' { BlockItem } '}'

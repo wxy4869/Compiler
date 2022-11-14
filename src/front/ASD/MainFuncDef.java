@@ -6,6 +6,7 @@ import utils.IOUtils;
 import java.util.ArrayList;
 
 public class MainFuncDef implements Node{
+    // MainFuncDef -> 'int' 'main' '(' ')' Block
     private Token main;
     private Block block;
 
@@ -16,12 +17,12 @@ public class MainFuncDef implements Node{
 
     @Override
     public void printMoi() {
-        IOUtils.write("INTTK int\n");
-        IOUtils.write("MAINTK main\n");
-        IOUtils.write("LPARENT (\n");
-        IOUtils.write("RPARENT )\n");
+        IOUtils.write("INTTK int\n", "output.txt", true);
+        IOUtils.write("MAINTK main\n", "output.txt", true);
+        IOUtils.write("LPARENT (\n", "output.txt", true);
+        IOUtils.write("RPARENT )\n", "output.txt", true);
         block.printMoi();
-        IOUtils.write("<MainFuncDef>\n");
+        IOUtils.write("<MainFuncDef>\n", "output.txt", true);
     }
 
     @Override

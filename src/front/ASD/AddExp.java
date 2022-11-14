@@ -7,6 +7,7 @@ import utils.Pair;
 import java.util.ArrayList;
 
 public class AddExp implements Node{
+    // AddExp -> MulExp | AddExp ('+' | '−') MulExp
     private ArrayList<MulExp> mulExp;
     private ArrayList<Token> ops;
 
@@ -20,9 +21,9 @@ public class AddExp implements Node{
         int size = mulExp.size();
         for (int i = 0; i < size; i++) {
             mulExp.get(i).printMoi();
-            IOUtils.write("<AddExp>\n");
+            IOUtils.write("<AddExp>\n", "output.txt", true);
             if (i < size - 1) {
-                IOUtils.write(ops.get(i).toString());
+                IOUtils.write(ops.get(i).toString(), "output.txt", true);
             }
         }
     }

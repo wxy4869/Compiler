@@ -6,6 +6,17 @@ import utils.IOUtils;
 import java.util.ArrayList;
 
 public class Stmt implements Node{
+    /* 0. Stmt -> Block
+     * 1. Stmt -> 'if' '(' Cond ')' Stmt [ 'else' Stmt ]
+     * 2. Stmt -> 'while' '(' Cond ')' Stmt
+     * 3. Stmt -> 'break' ';'
+     * 4. Stmt -> 'continue' ';'
+     * 5. Stmt -> 'return' [Exp] ';'
+     * 6. Stmt -> 'printf''('FormatString{','Exp}')'';'
+     * 7. Stmt -> LVal '=' Exp ';'
+     * 8. Stmt -> LVal '=' 'getint''('')'';'
+     * 9. Stmt -> [Exp] ';'
+     */
     private Lval lval;
     private Exp exp;
     private ArrayList<Exp> exps;
@@ -41,62 +52,62 @@ public class Stmt implements Node{
         if (type == 0) {
             block.printMoi();
         } else if (type == 1) {
-            IOUtils.write("IFTK if\n");
-            IOUtils.write("LPARENT (\n");
+            IOUtils.write("IFTK if\n", "output.txt", true);
+            IOUtils.write("LPARENT (\n", "output.txt", true);
             cond.printMoi();
-            IOUtils.write("RPARENT )\n");
+            IOUtils.write("RPARENT )\n", "output.txt", true);
             stmt1.printMoi();
             if (stmt2 != null) {
-                IOUtils.write("ELSETK else\n");
+                IOUtils.write("ELSETK else\n", "output.txt", true);
                 stmt2.printMoi();
             }
         } else if (type == 2) {
-            IOUtils.write("WHILETK while\n");
-            IOUtils.write("LPARENT (\n");
+            IOUtils.write("WHILETK while\n", "output.txt", true);
+            IOUtils.write("LPARENT (\n", "output.txt", true);
             cond.printMoi();
-            IOUtils.write("RPARENT )\n");
+            IOUtils.write("RPARENT )\n", "output.txt", true);
             stmt1.printMoi();
         } else if (type == 3) {
-            IOUtils.write("BREAKTK break\n");
-            IOUtils.write("SEMICN ;\n");
+            IOUtils.write("BREAKTK break\n", "output.txt", true);
+            IOUtils.write("SEMICN ;\n", "output.txt", true);
         } else if (type == 4) {
-            IOUtils.write("CONTINUETK continue\n");
-            IOUtils.write("SEMICN ;\n");
+            IOUtils.write("CONTINUETK continue\n", "output.txt", true);
+            IOUtils.write("SEMICN ;\n", "output.txt", true);
         } else if (type == 5) {
-            IOUtils.write("RETURNTK return\n");
+            IOUtils.write("RETURNTK return\n", "output.txt", true);
             if (exp != null) {
                 exp.printMoi();
             }
-            IOUtils.write("SEMICN ;\n");
+            IOUtils.write("SEMICN ;\n", "output.txt", true);
         } else if (type == 6) {
-            IOUtils.write("PRINTFTK printf\n");
-            IOUtils.write("LPARENT (\n");
-            IOUtils.write(formatString.toString());
+            IOUtils.write("PRINTFTK printf\n", "output.txt", true);
+            IOUtils.write("LPARENT (\n", "output.txt", true);
+            IOUtils.write(formatString.toString(), "output.txt", true);
             for (Exp value : exps) {
-                IOUtils.write("COMMA ,\n");
+                IOUtils.write("COMMA ,\n", "output.txt", true);
                 value.printMoi();
             }
-            IOUtils.write("RPARENT )\n");
-            IOUtils.write("SEMICN ;\n");
+            IOUtils.write("RPARENT )\n", "output.txt", true);
+            IOUtils.write("SEMICN ;\n", "output.txt", true);
         } else if (type == 7) {
             lval.printMoi();
-            IOUtils.write("ASSIGN =\n");
+            IOUtils.write("ASSIGN =\n", "output.txt", true);
             exp.printMoi();
-            IOUtils.write("SEMICN ;\n");
+            IOUtils.write("SEMICN ;\n", "output.txt", true);
         } else if (type == 8) {
             lval.printMoi();
-            IOUtils.write("ASSIGN =\n");
-            IOUtils.write("GETINTTK getint\n");
-            IOUtils.write("LPARENT (\n");
-            IOUtils.write("RPARENT )\n");
-            IOUtils.write("SEMICN ;\n");
+            IOUtils.write("ASSIGN =\n", "output.txt", true);
+            IOUtils.write("GETINTTK getint\n", "output.txt", true);
+            IOUtils.write("LPARENT (\n", "output.txt", true);
+            IOUtils.write("RPARENT )\n", "output.txt", true);
+            IOUtils.write("SEMICN ;\n", "output.txt", true);
         } else if (type == 9) {
             if (exp != null) {
                 exp.printMoi();
             }
-            IOUtils.write("SEMICN ;\n");
+            IOUtils.write("SEMICN ;\n", "output.txt", true);
         }
-        IOUtils.write("<Stmt>\n");
+        IOUtils.write("<Stmt>\n", "output.txt", true);
     }
 
     @Override

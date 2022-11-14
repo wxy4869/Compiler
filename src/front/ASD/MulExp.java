@@ -7,6 +7,7 @@ import utils.Pair;
 import java.util.ArrayList;
 
 public class MulExp implements Node{
+    // MulExp -> UnaryExp | MulExp ('*' | '/' | '%') UnaryExp
     private ArrayList<UnaryExp> unaryExp;
     private ArrayList<Token> ops;
 
@@ -20,9 +21,9 @@ public class MulExp implements Node{
         int size = unaryExp.size();
         for (int i = 0; i < size; i++) {
             unaryExp.get(i).printMoi();
-            IOUtils.write("<MulExp>\n");
+            IOUtils.write("<MulExp>\n", "output.txt", true);
             if (i < size - 1) {
-                IOUtils.write(ops.get(i).toString());
+                IOUtils.write(ops.get(i).toString(), "output.txt", true);
             }
         }
     }

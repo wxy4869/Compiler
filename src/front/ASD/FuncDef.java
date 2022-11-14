@@ -6,6 +6,7 @@ import utils.IOUtils;
 import java.util.ArrayList;
 
 public class FuncDef implements Node{
+    // FuncDef -> FuncType Ident '(' [FuncFParams] ')' Block
     private FuncType funcType;
     private Token ident;
     private FuncFParams funcFParams;
@@ -21,14 +22,14 @@ public class FuncDef implements Node{
     @Override
     public void printMoi() {
         funcType.printMoi();
-        IOUtils.write(ident.toString());
-        IOUtils.write("LPARENT (\n");
+        IOUtils.write(ident.toString(), "output.txt", true);
+        IOUtils.write("LPARENT (\n", "output.txt", true);
         if (funcFParams != null) {
             funcFParams.printMoi();
         }
-        IOUtils.write("RPARENT )\n");
+        IOUtils.write("RPARENT )\n", "output.txt", true);
         block.printMoi();
-        IOUtils.write("<FuncDef>\n");
+        IOUtils.write("<FuncDef>\n", "output.txt", true);
     }
 
     @Override

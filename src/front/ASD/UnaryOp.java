@@ -6,6 +6,7 @@ import utils.IOUtils;
 import java.util.ArrayList;
 
 public class UnaryOp implements Node{
+    // UnaryOp -> '+' | '−' | '!'
     private Token op;
 
     public UnaryOp(Token op) {
@@ -14,8 +15,8 @@ public class UnaryOp implements Node{
 
     @Override
     public void printMoi() {
-        IOUtils.write(op.toString());
-        IOUtils.write("<UnaryOp>\n");
+        IOUtils.write(op.toString(), "output.txt", true);
+        IOUtils.write("<UnaryOp>\n", "output.txt", true);
     }
 
     @Override

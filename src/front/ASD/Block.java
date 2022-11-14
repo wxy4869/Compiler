@@ -6,6 +6,7 @@ import utils.IOUtils;
 import java.util.ArrayList;
 
 public class Block implements Node{
+    // Block -> '{' { BlockItem } '}'
     private ArrayList<BlockItem> blockItem;
     private Token rbrace;
 
@@ -16,12 +17,12 @@ public class Block implements Node{
 
     @Override
     public void printMoi() {
-        IOUtils.write("LBRACE {\n");
+        IOUtils.write("LBRACE {\n", "output.txt", true);
         for (BlockItem value : blockItem) {
             value.printMoi();
         }
-        IOUtils.write("RBRACE }\n");
-        IOUtils.write("<Block>\n");
+        IOUtils.write("RBRACE }\n", "output.txt", true);
+        IOUtils.write("<Block>\n", "output.txt", true);
     }
 
     @Override

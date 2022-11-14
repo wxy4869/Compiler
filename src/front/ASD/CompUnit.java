@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.util.ArrayList;
 
 public class CompUnit implements Node{
+    // CompUnit -> {Decl} {FuncDef} MainFuncDef
     private ArrayList<Decl> decl;
     private ArrayList<FuncDef> funcDef;
     private MainFuncDef mainFuncDef;
@@ -20,23 +21,7 @@ public class CompUnit implements Node{
 
     @Override
     public void printMoi() {
-        File file = new File("output.txt");
-        BufferedWriter writer = null;
-        try {
-            writer = new BufferedWriter(new FileWriter(file));
-            writer.write("");
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (writer != null) {
-                try {
-                    writer.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
+        IOUtils.write("", "output.txt", false);
         for (Decl value : decl) {
             value.printMoi();
         }
@@ -44,8 +29,7 @@ public class CompUnit implements Node{
             value.printMoi();
         }
         mainFuncDef.printMoi();
-
-        IOUtils.write("<CompUnit>\n");
+        IOUtils.write("<CompUnit>\n", "output.txt", true);
     }
 
     @Override

@@ -5,6 +5,7 @@ import mid.Module;
 import table.SymGenerator;
 import utils.IOUtils;
 
+import java.lang.Error;
 import java.util.Collections;
 
 public class Compiler {
@@ -28,6 +29,9 @@ public class Compiler {
 
         SymGenerator symGenerator = new SymGenerator();
         symGenerator.generate(SynAnalyzer.root, false);
+        if (ErrHandler.errors.size() != 0 && op != 3) {
+            throw new Error("error in testfile");
+        }
         if (op == 3) {
             StringBuilder s = new StringBuilder();
             Collections.sort(ErrHandler.errors);

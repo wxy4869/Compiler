@@ -5,6 +5,7 @@ import utils.IOUtils;
 import java.util.ArrayList;
 
 public class ConstExp implements Node{
+    // ConstExp -> AddExp
     private AddExp addExp;
 
     public ConstExp(AddExp addExp) {
@@ -14,7 +15,7 @@ public class ConstExp implements Node{
     @Override
     public void printMoi() {
         addExp.printMoi();
-        IOUtils.write("<ConstExp>\n");
+        IOUtils.write("<ConstExp>\n", "output.txt", true);
     }
 
     @Override

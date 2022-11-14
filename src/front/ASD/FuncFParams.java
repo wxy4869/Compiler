@@ -5,6 +5,7 @@ import utils.IOUtils;
 import java.util.ArrayList;
 
 public class FuncFParams implements Node{
+    // FuncFParams -> FuncFParams { ',' FuncFParam }
     private ArrayList<FuncFParam> funcFParam;
 
     public FuncFParams(ArrayList<FuncFParam> funcFParam) {
@@ -16,10 +17,10 @@ public class FuncFParams implements Node{
         funcFParam.get(0).printMoi();
         int size = funcFParam.size();
         for (int i = 1; i < size; i++) {
-            IOUtils.write("COMMA ,\n");
+            IOUtils.write("COMMA ,\n", "output.txt", true);
             funcFParam.get(i).printMoi();
         }
-        IOUtils.write("<FuncFParams>\n");
+        IOUtils.write("<FuncFParams>\n", "output.txt", true);
     }
 
     @Override

@@ -3,6 +3,7 @@ package front.ASD;
 import java.util.ArrayList;
 
 public class Decl implements Node{
+    // Decl -> ConstDecl | VarDecl
     private ConstDecl constDecl;
     private VarDecl varDecl;
 

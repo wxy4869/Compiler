@@ -5,6 +5,7 @@ import utils.IOUtils;
 import java.util.ArrayList;
 
 public class VarDecl implements Node{
+    // VarDecl -> BType VarDef { ',' VarDef } ';'
     private ArrayList<VarDef> varDef;
 
     public VarDecl(ArrayList<VarDef> varDef) {
@@ -13,15 +14,15 @@ public class VarDecl implements Node{
 
     @Override
     public void printMoi() {
-        IOUtils.write("INTTK int\n");
+        IOUtils.write("INTTK int\n", "output.txt", true);
         varDef.get(0).printMoi();
         int size = varDef.size();
         for (int i = 1; i < size; i++) {
-            IOUtils.write("COMMA ,\n");
+            IOUtils.write("COMMA ,\n", "output.txt", true);
             varDef.get(i).printMoi();
         }
-        IOUtils.write("SEMICN ;\n");
-        IOUtils.write("<VarDecl>\n");
+        IOUtils.write("SEMICN ;\n", "output.txt", true);
+        IOUtils.write("<VarDecl>\n", "output.txt", true);
     }
 
     @Override

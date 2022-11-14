@@ -9,6 +9,7 @@ import utils.Pair;
 import java.util.ArrayList;
 
 public class PrimaryExp implements Node{
+    // PrimaryExp -> '(' Exp ')' | Lval | Number
     private Exp exp;
     private Lval lval;
     private Number number;
@@ -22,15 +23,15 @@ public class PrimaryExp implements Node{
     @Override
     public void printMoi() {
         if (exp != null) {
-            IOUtils.write("LPARENT (\n");
+            IOUtils.write("LPARENT (\n", "output.txt", true);
             exp.printMoi();
-            IOUtils.write("RPARENT )\n");
+            IOUtils.write("RPARENT )\n", "output.txt", true);
         } else if (lval != null) {
             lval.printMoi();
         } else if (number != null) {
             number.printMoi();
         }
-        IOUtils.write("<PrimaryExp>\n");
+        IOUtils.write("<PrimaryExp>\n", "output.txt", true);
     }
 
     @Override

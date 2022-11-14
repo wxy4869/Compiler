@@ -3,6 +3,7 @@ package front.ASD;
 import java.util.ArrayList;
 
 public class BlockItem implements Node{
+    // BlockItem -> Decl | Stmt
     private Decl decl;
     private Stmt stmt;
 

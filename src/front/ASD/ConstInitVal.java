@@ -5,6 +5,7 @@ import utils.IOUtils;
 import java.util.ArrayList;
 
 public class ConstInitVal implements Node{
+    // ConstInitVal -> ConstExp | '{' [ ConstInitVal { ',' ConstInitVal } ] '}'
     private ConstExp constExp;
     private ArrayList<ConstInitVal> constInitVal;
 
@@ -18,18 +19,18 @@ public class ConstInitVal implements Node{
         if (constExp != null) {
             constExp.printMoi();
         } else {
-            IOUtils.write("LBRACE {\n");
+            IOUtils.write("LBRACE {\n", "output.txt", true);
             int size = constInitVal.size();
             if (size > 0) {
                 constInitVal.get(0).printMoi();
                 for (int i = 1; i < size; i++) {
-                    IOUtils.write("COMMA ,\n");
+                    IOUtils.write("COMMA ,\n", "output.txt", true);
                     constInitVal.get(i).printMoi();
                 }
             }
-            IOUtils.write("RBRACE }\n");
+            IOUtils.write("RBRACE }\n", "output.txt", true);
         }
-        IOUtils.write("<ConstInitVal>\n");
+        IOUtils.write("<ConstInitVal>\n", "output.txt", true);
     }
 
     @Override
