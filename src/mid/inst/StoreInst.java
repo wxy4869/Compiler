@@ -4,7 +4,10 @@ import mid.BasicBlock;
 import mid.Value;
 
 public class StoreInst extends Inst {
-    // store <src.type> <src.name>, <dst.type>* <dst.name>
+    /* store <src.type> <src.name>, <dst.type> <dst.name>
+     * dst 是 PointerType, 理解为地址
+     * dst.innerType = src
+     */
     Value src;
     Value dst;
 
@@ -16,7 +19,7 @@ public class StoreInst extends Inst {
 
     @Override
     public String toString() {
-        return String.format("store %s %s, %s* %s", src.getType(), src.getName(), dst.getType(), dst.getName());
+        return String.format("store %s %s, %s %s", src.getType(), src.getName(), dst.getType(), dst.getName());
     }
 
     public Value getSrc() {

@@ -4,7 +4,10 @@ import mid.BasicBlock;
 import mid.Value;
 
 public class LoadInst extends Inst {
-    // <dst.name> = load <dst.type>, <src.type>* <src.name>
+    /* <dst.name> = load <dst.type>, <src.type> <src.name>
+     * src 是 PointerType, 理解为地址
+     * src.innerType = dst
+     */
     Value src;
     Value dst;
 
@@ -16,7 +19,7 @@ public class LoadInst extends Inst {
 
     @Override
     public String toString() {
-        return String.format("%s = load %s, %s* %s", dst.getName(), dst.getType(), src.getType(), src.getName());
+        return String.format("%s = load %s, %s %s", dst.getName(), dst.getType(), src.getType(), src.getName());
     }
 
     public Value getSrc() {

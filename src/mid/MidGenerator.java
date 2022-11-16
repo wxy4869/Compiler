@@ -17,6 +17,7 @@ public class MidGenerator {
     private Stack<BasicBlock> currentCondBlock;
     private Stack<BasicBlock> currentOutBlock;
     private SymTable currentSymTable;
+    private int arrayOffset; // 用于数组初始化
 
     public MidGenerator() {
         this.regID = 0;
@@ -25,6 +26,7 @@ public class MidGenerator {
         this.currentCondBlock = new Stack<>();
         this.currentOutBlock = new Stack<>();
         this.currentSymTable = SymGenerator.table.get(SynAnalyzer.root);
+        this.arrayOffset = 0;
     }
 
     public void generate(Node node) {
@@ -58,28 +60,23 @@ public class MidGenerator {
 
     public void ConstDefVisitor(ConstDef node) {
         Def def = (Def)currentSymTable.getSymbol(node.getIdent().getSrc(), false, node.getIdent().getLineNum());
-        String name;
-        Type type;
-        if (def.getDimension() == 0) {
-            type = new BaseType(BaseType.Tag.I32);
-        } else if (def.getDimension() == 1) {
-            type = new ArrayType(def.getSize().get(0), new BaseType(BaseType.Tag.I32));
-        } else {
-            type = new ArrayType(def.getSize().get(0), new ArrayType(def.getSize().get(1), new BaseType(BaseType.Tag.I32)));
+        Type type = new BaseType(BaseType.Tag.I32);
+        int capacity = 1;
+        for (int i = def.getDimension() - 1; i >= 0 ; i--) {
+            capacity *= def.getSize().get(i);
+            type = new ArrayType(def.getSize().get(i), type, capacity);
         }
         if (currentSymTable.getDepth() == 0) {
-            name = "@" + node.getIdent().getSrc();
-            new GlobalVariable(name, type, true,
-                    def.getSize().get(0), def.getSize().get(1),
-                    def.getInitVal(), def.getInitArrayVal(), false);
-            def.setAddr(new Value(name, type));
+            String name = "@" + node.getIdent().getSrc();
+            new GlobalVariable(name, type, true, def.getSize(), def.getInitVal(), def.getInitArrayVal(), false);
+            def.setAddr(new Value(name, new PointerType(type)));
         } else {
-            name = "%" + regID;
+            Value dst = new Value("%" + regID, new PointerType(type));
             regID++;
-            Value dst = new Value(name, type);
             new AllocaInst(currentBasicBlock, dst);
             def.setAddr(dst);
             ConstInitValVisitor(node.getConstInitVal(), dst, def);
+            arrayOffset = 0;
         }
     }
 
@@ -87,34 +84,18 @@ public class MidGenerator {
         if (def.getDimension() == 0) {
             Value src = new Value(Integer.toString(def.getInitVal()), new BaseType(BaseType.Tag.I32));
             new StoreInst(currentBasicBlock, src, value);
-        } else if (def.getDimension() == 1) {
-            int size1 = def.getSize().get(0);
-            ArrayList<Integer> initArrayVal = def.getInitArrayVal();
-            for (int i = 0; i < size1; i++) {
-                Value dst = new Value("%" + regID, new BaseType(BaseType.Tag.I32));
-                regID++;
-                ArrayList<Value> indexs = new ArrayList<>();
-                indexs.add(new Value(Integer.toString(0), new BaseType(BaseType.Tag.I32)));
-                indexs.add(new Value(Integer.toString(i), new BaseType(BaseType.Tag.I32)));
-                new GEPInst(currentBasicBlock, value, dst, indexs);
-                Value src = new Value(Integer.toString(initArrayVal.get(i)), new BaseType(BaseType.Tag.I32));
-                new StoreInst(currentBasicBlock, src, dst);
-            }
         } else {
-            int size1 = def.getSize().get(0);
-            int size2 = def.getSize().get(1);
-            ArrayList<Integer> initArrayVal = def.getInitArrayVal();
-            for (int i = 0; i < size1; i++) {
-                for (int j = 0; j < size2; j++) {
-                    Value dst = new Value("%" + regID, new BaseType(BaseType.Tag.I32));
-                    regID++;
-                    ArrayList<Value> indexs = new ArrayList<>();
-                    indexs.add(new Value(Integer.toString(0), new BaseType(BaseType.Tag.I32)));
-                    indexs.add(new Value(Integer.toString(i), new BaseType(BaseType.Tag.I32)));
-                    indexs.add(new Value(Integer.toString(j), new BaseType(BaseType.Tag.I32)));
-                    new GEPInst(currentBasicBlock, value, dst, indexs);
-                    Value src = new Value(Integer.toString(initArrayVal.get(i * size2 + j)), new BaseType(BaseType.Tag.I32));
-                    new StoreInst(currentBasicBlock, src, dst);
+            if (node.getConstExp() != null) {
+                Value dst = new Value("%" + regID, new PointerType(new BaseType(BaseType.Tag.I32)));
+                regID++;
+                ArrayList<Value> indexs = ((ArrayType)value.getType().getInnerType()).offset2index(arrayOffset);
+                new GEPInst(currentBasicBlock, value, dst, indexs);
+                Value src = new Value(Integer.toString(def.getInitArrayVal().get(arrayOffset)), new BaseType(BaseType.Tag.I32));
+                arrayOffset++;
+                new StoreInst(currentBasicBlock, src, dst);
+            } else {
+                for (ConstInitVal child : node.getConstInitVal()) {
+                    ConstInitValVisitor(child, value, def);
                 }
             }
         }
@@ -128,29 +109,24 @@ public class MidGenerator {
 
     public void VarDefVisitor(VarDef node) {
         Def def = (Def)currentSymTable.getSymbol(node.getIdent().getSrc(), false, node.getIdent().getLineNum());
-        String name;
-        Type type;
-        if (def.getDimension() == 0) {
-            type = new BaseType(BaseType.Tag.I32);
-        } else if (def.getDimension() == 1) {
-            type = new ArrayType(def.getSize().get(0), new BaseType(BaseType.Tag.I32));
-        } else {
-            type = new ArrayType(def.getSize().get(0), new ArrayType(def.getSize().get(1), new BaseType(BaseType.Tag.I32)));
+        Type type = new BaseType(BaseType.Tag.I32);
+        int capacity = 1;
+        for (int i = def.getDimension() - 1; i >= 0 ; i--) {
+            capacity *= def.getSize().get(i);
+            type = new ArrayType(def.getSize().get(i), type, capacity);
         }
         if (currentSymTable.getDepth() == 0) {
-            name = "@" + node.getIdent().getSrc();
-            new GlobalVariable(name, type, false,
-                    def.getSize().get(0), def.getSize().get(1),
-                    def.getInitVal(), def.getInitArrayVal(), def.isZeroInit());
-            def.setAddr(new Value(name, type));
+            String name = "@" + node.getIdent().getSrc();
+            new GlobalVariable(name, type, false, def.getSize(), def.getInitVal(), def.getInitArrayVal(), def.isZeroInit());
+            def.setAddr(new Value(name, new PointerType(type)));
         } else {
-            name = "%" + regID;
+            Value dst = new Value("%" + regID, new PointerType(type));
             regID++;
-            Value dst = new Value(name, type);
             new AllocaInst(currentBasicBlock, dst);
             def.setAddr(dst);
             if (node.getInitVal() != null) {
                 InitValVisitor(node.getInitVal(), dst, def);
+                arrayOffset = 0;
             }
         }
     }
@@ -159,57 +135,40 @@ public class MidGenerator {
         if (def.getDimension() == 0) {
             Value src = ExpVisitor(node.getExp());
             new StoreInst(currentBasicBlock, src, value);
-        } else if (def.getDimension() == 1) {
-            int size1 = def.getSize().get(0);
-            ArrayList<InitVal> initArrayVal = node.getInitVal();
-            for (int i = 0; i < size1; i++) {
-                Value dst = new Value("%" + regID, new BaseType(BaseType.Tag.I32));
-                regID++;
-                ArrayList<Value> indexs = new ArrayList<>();
-                indexs.add(new Value(Integer.toString(0), new BaseType(BaseType.Tag.I32)));
-                indexs.add(new Value(Integer.toString(i), new BaseType(BaseType.Tag.I32)));
-                new GEPInst(currentBasicBlock, value, dst, indexs);
-                Value src = ExpVisitor(initArrayVal.get(i).getExp());
-                new StoreInst(currentBasicBlock, src, dst);
-            }
         } else {
-            int size1 = def.getSize().get(0);
-            int size2 = def.getSize().get(1);
-            ArrayList<InitVal> initArrayVal1 = node.getInitVal();
-            for (int i = 0; i < size1; i++) {
-                ArrayList<InitVal> initArrayVal2 = initArrayVal1.get(i).getInitVal();
-                for (int j = 0; j < size2; j++) {
-                    Value dst = new Value("%" + regID, new BaseType(BaseType.Tag.I32));
-                    regID++;
-                    ArrayList<Value> indexs = new ArrayList<>();
-                    indexs.add(new Value(Integer.toString(0), new BaseType(BaseType.Tag.I32)));
-                    indexs.add(new Value(Integer.toString(i), new BaseType(BaseType.Tag.I32)));
-                    indexs.add(new Value(Integer.toString(j), new BaseType(BaseType.Tag.I32)));
-                    new GEPInst(currentBasicBlock, value, dst, indexs);
-                    Value src = ExpVisitor(initArrayVal2.get(j).getExp());
-                    new StoreInst(currentBasicBlock, src, dst);
+            if (node.getExp() != null) {
+                Value dst = new Value("%" + regID, new PointerType(new BaseType(BaseType.Tag.I32)));
+                regID++;
+                ArrayList<Value> indexs = ((ArrayType)value.getType().getInnerType()).offset2index(arrayOffset);
+                arrayOffset++;
+                new GEPInst(currentBasicBlock, value, dst, indexs);
+                Value src = ExpVisitor(node.getExp());
+                new StoreInst(currentBasicBlock, src, dst);
+            } else {
+                for (InitVal child : node.getInitVal()) {
+                    InitValVisitor(child, value, def);
                 }
             }
         }
     }
 
     public void FuncDefVisitor(FuncDef node) {
+        Func func = (Func)currentSymTable.getSymbol(node.getIdent().getSrc(), true, node.getIdent().getLineNum());
         String funcName = "@" + node.getIdent().getSrc();
-        Type type = (node.getFuncType().getFuncType().getDst().equals("VOIDTK")) ?
-                new BaseType(BaseType.Tag.VOID) : new BaseType(BaseType.Tag.I32);
+        Type type = (func.isVoid()) ? new BaseType(BaseType.Tag.VOID) : new BaseType(BaseType.Tag.I32);
         currentFunction = new Function(funcName, type);
         currentBasicBlock = new BasicBlock("0", currentFunction);
         currentFunction.getBasicBlocks().add(currentBasicBlock);
         regID = 0;
         currentSymTable = SymGenerator.table.get(node.getBlock());
         if (node.getFuncFParams() != null) {
-            ArrayList<Pair<Value, FuncParam>> addrs = FuncFParamsVisitor(node.getFuncFParams());
+            ArrayList<Pair<Value, FuncParam>> addrs = FuncFParamsVisitor(node.getFuncFParams());  // 返回的 Value 是 BaseType 或 PointerType, 即 I32, I32* 或 [2 x i32]*
             currentBasicBlock.setName(Integer.toString(regID));
             regID++;
             for (Pair<Value, FuncParam> src : addrs) {
-                Value dst = new Value("%" + regID, src.getFirst().getType());
+                Value dst = new Value("%" + regID, new PointerType(src.getFirst().getType()));
                 regID++;
-                src.getSecond().setAddr(dst);
+                src.getSecond().setAddr(dst);  // dst 是 PointerType, dst.innerType 与 src.getFirst 类型相同, 是 BaseType 或 PointerType, 即 I32, I32* 或 [2 x i32]*
                 new AllocaInst(currentBasicBlock, dst);
                 new StoreInst(currentBasicBlock, src.getFirst(), dst);
             }
@@ -219,7 +178,6 @@ public class MidGenerator {
         }
         BlockVisitor(node.getBlock());
         currentSymTable = currentSymTable.getParent();
-        Func func = (Func)currentSymTable.getSymbol(node.getIdent().getSrc(), true, node.getIdent().getLineNum());
         int size = currentBasicBlock.getInsts().size();
         if ((size == 0 || !(currentBasicBlock.getInsts().get(size - 1) instanceof RetInst)) && func.isVoid()) {
             new RetInst(currentBasicBlock, new Value(null, new BaseType(BaseType.Tag.VOID)));
@@ -233,6 +191,7 @@ public class MidGenerator {
         regID = 1;
         currentSymTable = SymGenerator.table.get(node.getBlock());
         BlockVisitor(node.getBlock());
+        currentSymTable = currentSymTable.getParent();
     }
 
     /* public String FuncTypeVisitor(FuncType node) { return null; } */
@@ -250,25 +209,26 @@ public class MidGenerator {
         FuncParam funcParam = (FuncParam)currentSymTable.getSymbol(node.getIdent().getSrc(), false, node.getIdent().getLineNum());
         String paramName = "%" + regID;
         regID++;
-        Type type;
-        int size;
-        if (!node.isPointer()) {
-            type = new BaseType(BaseType.Tag.I32);
-        } else if (node.isPointer()) {
-            type = new PointerType(new BaseType(BaseType.Tag.I32));
-        } else {
-            size = funcParam.getSize().get(1);
-            type = new PointerType(new ArrayType(size, new BaseType(BaseType.Tag.I32)));
+        Type type = new BaseType(BaseType.Tag.I32);
+        int capacity = 1;
+        for (int i = funcParam.getDimension() - 1; i > 0 ; i--) {  // 形参的第一个 [ ] 是空的, 保存为 0, 所以不访问 i = 0
+            capacity *= funcParam.getSize().get(i);
+            type = new ArrayType(funcParam.getSize().get(i), type, capacity);
+        }
+        if (node.isPointer()) {  // a[] 或 a[][2] 时 isPointer 为 true
+            type = new PointerType(type);  // 处理后 type 为 PointerType, 即 I32* 或 [2 x i32]*
         }
         new Argument(paramName, type, currentFunction);
-        Value addr = new Value(paramName, type);
-        funcParam.setAddr(addr);
-        return new Pair<>(addr, funcParam);
+        Value addr = new Value(paramName,type);  // addr 是 BaseType 或 PointerType, 即 I32, I32* 或 [2 x i32]*
+        return new Pair<>(addr, funcParam);  // setAddr 在 FuncDefVisitor 中进行
     }
 
     public void BlockVisitor(Block node) {
         for (BlockItem value : node.getBlockItem()) {
             BlockItemVisitor(value);
+            if (currentBasicBlock.isEnd()) {
+                break;
+            }
         }
     }
 
@@ -372,7 +332,6 @@ public class MidGenerator {
             int len = fmtStr.length();
             for (int i = 1, j = 0; i < len - 1; i++) {
                 if (fmtStr.charAt(i) == '%') {
-                    // Value dst = ExpVisitor(node.getExps().get(j));
                     new PutInst(currentBasicBlock, expValue.get(j), true);
                     i++;
                     j++;
@@ -415,82 +374,113 @@ public class MidGenerator {
      *      Stmt -> Lval '=' 'getint' '(' ')' ';'
      * isLeft = false 的情况
      *      PrimaryExp -> Lval
+     *
+     * Def / FuncParam
+     * 变量 / 数组
+     *      FuncParam 且数组时
+     *          需要 LoadInst 将 addr 中的内容取出
+     *          如果有 exp, FuncParam 中 GEPInst 的 indexs 直接从 exp 开始
+     *          如果无 exp, FuncParam 中直接返回
+     * isLeft : isLeft = true 时, 不需要 LoadInst, 返回的是 PointerType
      */
     public Value LvalVisitor(Lval node, boolean isLeft) {
         Symbol symbol = currentSymTable.getSymbol(node.getIdent().getSrc(), true, node.getIdent().getLineNum());
-        if (symbol instanceof Def) {
-            Def def = (Def)symbol;
-            Value src = def.getAddr(), tmp;
-            for (Exp exp : node.getExp()) {
-                ArrayList<Value> indexs = new ArrayList<>();
-                indexs.add(new Value("0", new BaseType(BaseType.Tag.I32)));
-                indexs.add(ExpVisitor(exp));
-                tmp = new Value("%" + regID, ((ArrayType)src.getType()).getInnerType());
-                regID++;
-                new GEPInst(currentBasicBlock, src, tmp, indexs);
-                src = tmp;
-            }
-            if (isLeft) {
-                return src;
-            } else {
-                if (node.getExp().size() != def.getDimension()) {
-                    ArrayList<Value> indexs = new ArrayList<>();
-                    indexs.add(new Value("0", new BaseType(BaseType.Tag.I32)));
-                    indexs.add(new Value("0", new BaseType(BaseType.Tag.I32)));
-                    Type type = new PointerType(((ArrayType)src.getType()).getInnerType());
-                    tmp = new Value("%" + regID, type);
-                    regID++;
-                    new GEPInst(currentBasicBlock, src, tmp, indexs);
+        if (symbol instanceof Def) {  // 变量
+            Def def = (Def) symbol;
+            Value src = def.getAddr();
+            if (def.getDimension() == 0) {
+                if (isLeft) {
+                    return src;  // src 是符号表中的 addr, PointerType
                 } else {
-                    tmp = new Value("%" + regID, new BaseType(BaseType.Tag.I32));
+                    Value dst = new Value("%" + regID, src.getType().getInnerType());
                     regID++;
-                    new LoadInst(currentBasicBlock, src, tmp);
+                    new LoadInst(currentBasicBlock, src, dst);  // src 是符号表中的 addr, PointerType; dst 是 BaseType I32
+                    return dst;  // dst 是 LoadInst 的结果, BaseType I32
                 }
-                return tmp;
-            }
-        } else {
-            FuncParam funcParam = (FuncParam)symbol;
-            Value src = funcParam.getAddr();
-            int size = node.getExp().size();
-            if (size == 0 && isLeft) {
-                return src;
-            }
-            Value tmp = new Value("%" + regID, src.getType());
-            regID++;
-            new LoadInst(currentBasicBlock, src, tmp);
-            if (size == 0) {
-                return tmp;
-            } else {
-                Type type = ((PointerType)src.getType()).getInnerType();
-                src = new Value(tmp.getName(), type);
-                for (int i = 0; i < funcParam.getDimension(); i++) {
-                    ArrayList<Value> indexs = new ArrayList<>();
-                    if (i != 0) {
-                        indexs.add(new Value("0", new BaseType(BaseType.Tag.I32)));
+            } else {  // 数组
+                Value dst = src;  // dst 是符号表中的 addr, PointerType
+                ArrayList<Value> indexs = new ArrayList<>();
+                if (node.getExp().size() != 0) {
+                    Type type = src.getType().getInnerType();
+                    indexs.add(new Value("0", new BaseType(BaseType.Tag.I32)));
+                    for (Exp exp : node.getExp()) {
+                        type = type.getInnerType();
+                        indexs.add(ExpVisitor(exp));
                     }
-                    if (i >= size) {
-                        indexs.add(new Value("0", new BaseType(BaseType.Tag.I32)));
-                    } else {
-                        indexs.add(ExpVisitor(node.getExp().get(i)));
-                    }
-                    tmp = new Value("%" + regID, type);
+                    dst = new Value("%" + regID, new PointerType(type));
                     regID++;
-                    new GEPInst(currentBasicBlock, src, tmp, indexs);
-                    src = tmp;
+                    new GEPInst(currentBasicBlock, src, dst, indexs);
+                }
+                if (def.getDimension() != node.getExp().size()) {
+                    indexs = new ArrayList<>();
+                    indexs.add(new Value("0", new BaseType(BaseType.Tag.I32)));
+                    indexs.add(new Value("0", new BaseType(BaseType.Tag.I32)));
+                    Value tmp = dst;
+                    dst = new Value("%" + regID, new PointerType(dst.getType().getInnerType().getInnerType()));
+                    regID++;
+                    new GEPInst(currentBasicBlock, tmp, dst, indexs);
+                    return dst;  // dst 是符号表中的 addr 或 GEPInst 的结果
                 }
                 if (isLeft) {
-                    src = new Value(src.getName(), new BaseType(BaseType.Tag.I32));
+                    return dst;  // dst 是符号表中的 addr 或 GEPInst 的结果
+                } else {
+                    Value tmp = dst;  // dst 是符号表中的 addr 或 GEPInst 的结果
+                    dst = new Value("%" + regID, tmp.getType().getInnerType());
+                    regID++;
+                    new LoadInst(currentBasicBlock, tmp, dst);
+                    return dst;  // dst 是 LoadInst 的结果
+                }
+            }
+        } else {
+            FuncParam funcParam = (FuncParam) symbol;
+            Value src = funcParam.getAddr();
+            if (funcParam.getDimension() == 0) {
+                if (isLeft) {
                     return src;
                 } else {
-                    if (size != funcParam.getDimension()) {
-                        tmp = new Value(tmp.getName(), new PointerType(((ArrayType)tmp.getType()).getInnerType()));
-                    } else {
-                        tmp = new Value("%" + regID, new BaseType(BaseType.Tag.I32));
-                        regID++;
-                        src = new Value(src.getName(), new BaseType(BaseType.Tag.I32));
-                        new LoadInst(currentBasicBlock, src, tmp);
+                    Value dst = new Value("%" + regID, src.getType().getInnerType());
+                    regID++;
+                    new LoadInst(currentBasicBlock, src, dst);
+                    return dst;
+                }
+            } else {
+                Value dst = new Value("%" + regID, src.getType().getInnerType());  // 与 Def 不同: FuncParam 且数组时, 需要 LoadInst 将 addr 中的内容取出
+                regID++;  //..
+                new LoadInst(currentBasicBlock, src, dst);  //..
+                src = dst;  // 与 Def 不同: 一维数组时, Def 中是 [2 x i32]*, FuncParam 中是 i32*; 二维数组时, Def 中是 [2 x [3 x i32]]*, FuncParam 中是 [2 x i32]*
+                ArrayList<Value> indexs = new ArrayList<>();
+                if (node.getExp().size() != 0) {
+                    Type type = src.getType();  //  与 Def 不同: 如果有 exp, FuncParam 中 GEPInst 的 indexs 直接从 exp 开始
+                    // indexs.add(new Value("0", new BaseType(BaseType.Tag.I32)));  //..
+                    for (Exp exp : node.getExp()) {
+                        type = type.getInnerType();
+                        indexs.add(ExpVisitor(exp));
                     }
-                    return tmp;
+                    dst = new Value("%" + regID, new PointerType(type));
+                    regID++;
+                    new GEPInst(currentBasicBlock, src, dst, indexs);
+                }
+                if (funcParam.getDimension() != node.getExp().size()) {
+                    if (node.getExp().size() == 0) {  // 与 Def 不同: 如果无 exp, FuncParam 中直接返回
+                        return dst;  //..
+                    }  //..
+                    indexs = new ArrayList<>();
+                    indexs.add(new Value("0", new BaseType(BaseType.Tag.I32)));
+                    indexs.add(new Value("0", new BaseType(BaseType.Tag.I32)));
+                    Value tmp = dst;
+                    dst = new Value("%" + regID, new PointerType(dst.getType().getInnerType().getInnerType()));
+                    regID++;
+                    new GEPInst(currentBasicBlock, tmp, dst, indexs);  // 与 Def 相同
+                    return dst;
+                }
+                if (isLeft) {
+                    return dst;
+                } else {
+                    Value tmp = dst;
+                    dst = new Value("%" + regID, tmp.getType().getInnerType());
+                    regID++;
+                    new LoadInst(currentBasicBlock, tmp, dst);
+                    return dst;
                 }
             }
         }
@@ -535,6 +525,12 @@ public class MidGenerator {
         } else {
             Value src1 = new Value("0", new BaseType(BaseType.Tag.I32));
             Value src2 = UnaryExpVisitor(node.getUnaryExp());
+            if (((BaseType)src2.getType()).getTag() != BaseType.Tag.I32) {
+                Value tmp =  new Value("%" + regID, new BaseType(BaseType.Tag.I32));
+                regID++;
+                new ZextInst(currentBasicBlock, src2, tmp);
+                src2 = tmp;
+            }
             Value dst = new Value("%" + regID, new BaseType(BaseType.Tag.I32));
             regID++;
             if (node.getUnaryOp().getOp().getSrc().equals("+")) {
@@ -568,6 +564,18 @@ public class MidGenerator {
             src1 = UnaryExpVisitor(node.getUnaryExp().get(0));
             for (int i = 1; i < size; i++) {
                 src2 = UnaryExpVisitor(node.getUnaryExp().get(i));
+                if (((BaseType)src1.getType()).getTag() != BaseType.Tag.I32) {
+                    Value tmp =  new Value("%" + regID, new BaseType(BaseType.Tag.I32));
+                    regID++;
+                    new ZextInst(currentBasicBlock, src1, tmp);
+                    src1 = tmp;
+                }
+                if (((BaseType)src2.getType()).getTag() != BaseType.Tag.I32) {
+                    Value tmp =  new Value("%" + regID, new BaseType(BaseType.Tag.I32));
+                    regID++;
+                    new ZextInst(currentBasicBlock, src2, tmp);
+                    src2 = tmp;
+                }
                 dst = new Value("%" + regID, new BaseType(BaseType.Tag.I32));
                 regID++;
                 if (node.getOps().get(i - 1).getSrc().equals("*")) {
@@ -592,6 +600,18 @@ public class MidGenerator {
             src1 = MulExpVisitor(node.getMulExp().get(0));
             for (int i = 1; i < size; i++) {
                 src2 = MulExpVisitor(node.getMulExp().get(i));
+                if (((BaseType)src1.getType()).getTag() != BaseType.Tag.I32) {
+                    Value tmp =  new Value("%" + regID, new BaseType(BaseType.Tag.I32));
+                    regID++;
+                    new ZextInst(currentBasicBlock, src1, tmp);
+                    src1 = tmp;
+                }
+                if (((BaseType)src2.getType()).getTag() != BaseType.Tag.I32) {
+                    Value tmp =  new Value("%" + regID, new BaseType(BaseType.Tag.I32));
+                    regID++;
+                    new ZextInst(currentBasicBlock, src2, tmp);
+                    src2 = tmp;
+                }
                 dst = new Value("%" + regID, new BaseType(BaseType.Tag.I32));
                 regID++;
                 if (node.getOps().get(i - 1).getSrc().equals("+")) {
@@ -731,11 +751,15 @@ public class MidGenerator {
                 currentBasicBlock.setEnd(true);
                 currentBasicBlock = nextBlock;
                 currentFunction.getBasicBlocks().add(currentBasicBlock);
-                cond = LAndExpVisitor(node.getlAndExp().get(i), trueBlock, nextBlock);
                 if (i != size - 1) {
+                    BasicBlock tmpBlock = new BasicBlock(null, currentFunction);
+                    cond = LAndExpVisitor(node.getlAndExp().get(i), trueBlock, tmpBlock);
                     nextBlock = new BasicBlock(Integer.toString(regID), currentFunction);
                     regID++;
+                    tmpBlock.setName(nextBlock.getName());
                     new BrInst(currentBasicBlock, cond, trueBlock, nextBlock, null);
+                } else {
+                    cond = LAndExpVisitor(node.getlAndExp().get(i), trueBlock, falseBlock);
                 }
             }
             return cond;

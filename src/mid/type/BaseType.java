@@ -15,6 +15,10 @@ public class BaseType implements Type{
         VOID,
     }
 
+    public Type getInnerType(){
+        return null;
+    }
+
     @Override
     public String toString() {
         return tag.name().toLowerCase(Locale.ROOT);

@@ -6,7 +6,9 @@ import mid.Value;
 import java.util.ArrayList;
 
 public class GEPInst extends Inst {
-    // <dst.name> = getelementptr <src.type>, <src.type>* <src.name>{, <index.type> <index.name>}
+    /* <dst.name> = getelementptr <src.type.innerType>, <src.type> <src.name>{, <index.type> <index.name>}
+     * src 是 PointerType
+     */
     Value src;
     Value dst;
     ArrayList<Value> indexs;
@@ -35,8 +37,8 @@ public class GEPInst extends Inst {
                 indexStr.append(indexs.get(i).getName());
             }
         }
-        return String.format("%s = getelementptr %s, %s* %s, %s",
-                dst.getName(), src.getType(), src.getType(), src.getName(), indexStr);
+        return String.format("%s = getelementptr %s, %s %s, %s",
+                dst.getName(), src.getType().getInnerType(), src.getType(), src.getName(), indexStr);
     }
 
     public Value getDst() {

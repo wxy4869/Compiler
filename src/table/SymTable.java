@@ -18,30 +18,13 @@ public class SymTable {
         this.depth = depth;
     }
 
-    /*public boolean findSymbol(String symbol, boolean inParent) {
-        if (symbolMap.containsKey(symbol)) {
-            return true;
-        } else if (inParent && parent != null) {
-            return parent.findSymbol(symbol, inParent);
-        }
-        return false;
-    }
-
-    public Symbol getSymbol(String symbol, boolean inParent) {
-        if (symbolMap.containsKey(symbol)) {
-            return symbolMap.get(symbol);
-        } else if (inParent && parent != null) {
-            return parent.getSymbol(symbol, inParent);
-        }
-        return null;
-    }*/
-
     public Symbol getSymbol(String name, boolean inParent, int lineNum) {
         if (symbolMap.containsKey(name)) {
             Symbol symbol = symbolMap.get(name);
             if (symbol.getLineNum() <= lineNum) {
                 return symbol;
             }
+            return parent.getSymbol(name, inParent, lineNum);
         } else if (inParent && parent != null) {
             return parent.getSymbol(name, inParent, lineNum);
         }

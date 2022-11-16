@@ -8,74 +8,61 @@ import utils.IOUtils;
 import java.util.ArrayList;
 
 public class GlobalVariable extends User{
-    // <name> = dso_local <global | constant> <type> <initVal | initArrayVal>
+    // <name> = dso_local <global | constant> <type initVal | type initArrayVal>
     Module parent;
     boolean isConst;
-    int size1;
-    int size2;
+    ArrayList<Integer> size;
     int initVal;
     ArrayList<Integer> initArrayVal;
     boolean isZeroInit;
+    int offset;  // 用于将初始化打印
 
-    public GlobalVariable(String name, Type type, boolean isConst,
-                          int size1, int size2, int initVal, ArrayList<Integer> initArrayVal, boolean isZeroInit) {
+    public GlobalVariable(String name, Type type, boolean isConst, ArrayList<Integer> size, int initVal, ArrayList<Integer> initArrayVal, boolean isZeroInit) {
         super(name, type);
         this.parent = Module.module;
         this.isConst = isConst;
-        this.size1 = size1;
-        this.size2 = size2;
+        this.size = size;
         this.initVal = initVal;
         this.initArrayVal = initArrayVal;
         this.isZeroInit = isZeroInit;
         this.parent.getGlobalVariables().add(this);
+        this.offset = 0;
     }
 
     public void printMoi(String path) {
         String constStr = (isConst) ? "constant" : "global";
-        StringBuilder initStr;
+        StringBuilder initStr = new StringBuilder("");;
         if (type instanceof BaseType) {
             if (isZeroInit) {
-                initStr = new StringBuilder(Integer.toString(0));
+                initStr.append(String.format("%s 0", type));
             } else {
-                initStr = new StringBuilder(Integer.toString(initVal));
+                initStr.append(String.format("%s %d", type, initVal));
             }
         } else {
             if (isZeroInit) {
-                initStr = new StringBuilder("zeroinitializer");
+                initStr.append(String.format("%s zeroinitializer", type));
             } else {
-                initStr = new StringBuilder("[");
-                ArrayType arrayType1 = (ArrayType) type;
-                if (size2 == 0) {
-                    // [i32 1, i32 2]
-                    initStr.append(arrayType1.getInnerType().toString()).append(" ").append(initArrayVal.get(0));
-                    for (int i = 1; i < size1; i++) {
-                        initStr.append(", ");
-                        initStr.append(arrayType1.getInnerType().toString()).append(" ").append(initArrayVal.get(i));
-                    }
-                    initStr.append("]");
-                } else {
-                    // [[2 x i32] [i32 1, i32 2], [2 x i32] [i32 3, i32 4]]
-                    for (int i = 0; i < size1; i++) {
-                        initStr.append(arrayType1.getInnerType().toString());
-                        initStr.append(" [");
-                        ArrayType arrayType2 = (ArrayType) arrayType1.getInnerType();
-                        for (int j = 0; j < size2; j++) {
-                            initStr.append(arrayType2.getInnerType().toString()).append(" ").append(initArrayVal.get(i * size2 + j));
-                            if (j != size2 - 1) {
-                                initStr.append(", ");
-                            }
-                        }
-                        if (i != size1 - 1) {
-                            initStr.append("], ");
-                        } else {
-                            initStr.append("]");
-                        }
-                    }
-                    initStr.append("]");
-                }
+                genInitStr(initStr, type);
             }
         }
-        IOUtils.write(String.format("%s = dso_local %s %s %s\n", name, constStr, type, initStr), path, true);
+        IOUtils.write(String.format("%s = dso_local %s %s\n", name, constStr, initStr), path, true);
+    }
+
+    public void genInitStr(StringBuilder initStr, Type typeNow) {
+        if (typeNow instanceof BaseType) {
+            initStr.append(String.format("%s %s", typeNow, initArrayVal.get(offset)));
+            offset++;
+        } else {
+            int size = ((ArrayType)typeNow).getSize();
+            initStr.append(String.format("%s [", typeNow));
+            for (int i = 0; i < size; i++) {
+                genInitStr(initStr, ((ArrayType)typeNow).getInnerType());
+                if (i != size - 1) {
+                    initStr.append(", ");
+                }
+            }
+            initStr.append("]");
+        }
     }
 
     public boolean isConst() {
@@ -86,20 +73,12 @@ public class GlobalVariable extends User{
         isConst = aConst;
     }
 
-    public int getSize1() {
-        return size1;
+    public ArrayList<Integer> getSize() {
+        return size;
     }
 
-    public void setSize1(int size1) {
-        this.size1 = size1;
-    }
-
-    public int getSize2() {
-        return size2;
-    }
-
-    public void setSize2(int size2) {
-        this.size2 = size2;
+    public void setSize(ArrayList<Integer> size) {
+        this.size = size;
     }
 
     public int getInitVal() {
@@ -116,5 +95,21 @@ public class GlobalVariable extends User{
 
     public void setInitArrayVal(ArrayList<Integer> initArrayVal) {
         this.initArrayVal = initArrayVal;
+    }
+
+    public boolean isZeroInit() {
+        return isZeroInit;
+    }
+
+    public void setZeroInit(boolean zeroInit) {
+        isZeroInit = zeroInit;
+    }
+
+    public int getOffset() {
+        return offset;
+    }
+
+    public void setOffset(int offset) {
+        this.offset = offset;
     }
 }
