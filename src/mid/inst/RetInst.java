@@ -16,10 +16,10 @@ public class RetInst extends Inst {
 
     @Override
     public String toString() {
-        String retStr = ret.getType().toString();
         if (((BaseType)ret.getType()).getTag() == BaseType.Tag.I32) {
-            retStr = retStr + " " + ret.getName();
+            return String.format("ret %s %s", ret.getType(), ret.getName());
+        } else {
+            return String.format("ret %s", ret.getType());
         }
-        return String.format("ret %s", retStr);
     }
 }

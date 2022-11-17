@@ -4,8 +4,9 @@ import mid.BasicBlock;
 import mid.Value;
 
 public class BrInst extends Inst{
-    // br i1 <cond>, label <trueLabel>, label <falseLabel>
-    // br label <dstLabel>
+    /* br i1 <cond>, label <trueLabel>, label <falseLabel>
+     * br label <dstLabel>
+     */
     Value cond;
     BasicBlock trueLabel;
     BasicBlock falseLabel;

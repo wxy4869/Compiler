@@ -19,21 +19,23 @@ public class Function extends User{
         this.parent.getFunctions().add(this);
     }
 
-    public void printMoi(String path) {
-        IOUtils.write(String.format("define dso_local %s %s(", type, name), path, true);
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        str.append(String.format("define dso_local %s %s(", type, name));
         int size = arguments.size();
-        if (size != 0) {
-            IOUtils.write(arguments.get(0).toString(), path, true);
-            for (int i = 1; i < size; i++) {
-                IOUtils.write(", ", path, true);
-                IOUtils.write(arguments.get(i).toString(), path, true);
+        for (int i = 0; i < size; i++) {
+            str.append(arguments.get(i));
+            if (i != size - 1) {
+                str.append(", ");
             }
         }
-        IOUtils.write(") {\n", path, true);
+        str.append(") {\n");
         for (BasicBlock value : basicBlocks) {
-            value.printMoi(path);
+            str.append(value);
         }
-        IOUtils.write("}\n", path, true);
+        str.append("}\n");
+        return str.toString();
     }
 
     public ArrayList<BasicBlock> getBasicBlocks() {

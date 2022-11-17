@@ -23,22 +23,14 @@ public class GEPInst extends Inst {
     @Override
     public String toString() {
         StringBuilder indexStr = new StringBuilder();
-        if (indexs != null) {
-            int size = indexs.size();
-            if (size != 0) {
-                indexStr.append(indexs.get(0).getType());
-                indexStr.append(" ");
-                indexStr.append(indexs.get(0).getName());
-            }
-            for (int i = 1; i < size; i++) {
+        int size = indexs.size();
+        for (int i = 0; i < size; i++) {
+            indexStr.append(String.format("%s %s", indexs.get(i).getType(), indexs.get(i).getName()));
+            if (i != size - 1) {
                 indexStr.append(", ");
-                indexStr.append(indexs.get(i).getType());
-                indexStr.append(" ");
-                indexStr.append(indexs.get(i).getName());
             }
         }
-        return String.format("%s = getelementptr %s, %s %s, %s",
-                dst.getName(), src.getType().getInnerType(), src.getType(), src.getName(), indexStr);
+        return String.format("%s = getelementptr %s, %s %s, %s", dst.getName(), src.getType().getInnerType(), src.getType(), src.getName(), indexStr);
     }
 
     public Value getDst() {

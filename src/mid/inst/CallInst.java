@@ -23,16 +23,11 @@ public class CallInst extends Inst {
         String hasDst = (dst != null) ? dst.getName() + " = " : "";
         StringBuilder paramStr = new StringBuilder();
         int size = params.size();
-        if (size != 0) {
-            paramStr.append(params.get(0).getType());
-            paramStr.append(" ");
-            paramStr.append(params.get(0).getName());
-        }
-        for (int i = 1; i < size; i++) {
-            paramStr.append(", ");
-            paramStr.append(params.get(i).getType());
-            paramStr.append(" ");
-            paramStr.append(params.get(i).getName());
+        for (int i = 0; i < size; i++) {
+            paramStr.append(String.format("%s %s", params.get(i).getType(), params.get(i).getName()));
+            if (i != size - 1) {
+                paramStr.append(", ");
+            }
         }
         return String.format("%scall %s %s(%s)", hasDst, func.getType(), func.getName(), paramStr);
     }

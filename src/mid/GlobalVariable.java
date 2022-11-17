@@ -29,25 +29,6 @@ public class GlobalVariable extends User{
         this.offset = 0;
     }
 
-    public void printMoi(String path) {
-        String constStr = (isConst) ? "constant" : "global";
-        StringBuilder initStr = new StringBuilder("");;
-        if (type instanceof BaseType) {
-            if (isZeroInit) {
-                initStr.append(String.format("%s 0", type));
-            } else {
-                initStr.append(String.format("%s %d", type, initVal));
-            }
-        } else {
-            if (isZeroInit) {
-                initStr.append(String.format("%s zeroinitializer", type));
-            } else {
-                genInitStr(initStr, type);
-            }
-        }
-        IOUtils.write(String.format("%s = dso_local %s %s\n", name, constStr, initStr), path, true);
-    }
-
     public void genInitStr(StringBuilder initStr, Type typeNow) {
         if (typeNow instanceof BaseType) {
             initStr.append(String.format("%s %s", typeNow, initArrayVal.get(offset)));
@@ -63,6 +44,26 @@ public class GlobalVariable extends User{
             }
             initStr.append("]");
         }
+    }
+
+    @Override
+    public String toString() {
+        String constStr = (isConst) ? "constant" : "global";
+        StringBuilder initStr = new StringBuilder("");;
+        if (type instanceof BaseType) {
+            if (isZeroInit) {
+                initStr.append(String.format("%s 0", type));
+            } else {
+                initStr.append(String.format("%s %d", type, initVal));
+            }
+        } else {
+            if (isZeroInit) {
+                initStr.append(String.format("%s zeroinitializer", type));
+            } else {
+                genInitStr(initStr, type);
+            }
+        }
+        return String.format("%s = dso_local %s %s\n", name, constStr, initStr);
     }
 
     public boolean isConst() {

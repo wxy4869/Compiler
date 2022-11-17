@@ -271,6 +271,17 @@ public class SynAnalyzer {
         return new BlockItem(decl, stmt);
     }
 
+    /* 0. Stmt -> Block
+     * 1. Stmt -> 'if' '(' Cond ')' Stmt [ 'else' Stmt ]
+     * 2. Stmt -> 'while' '(' Cond ')' Stmt
+     * 3. Stmt -> 'break' ';'
+     * 4. Stmt -> 'continue' ';'
+     * 5. Stmt -> 'return' [Exp] ';'
+     * 6. Stmt -> 'printf''('FormatString{','Exp}')'';'
+     * 7. Stmt -> LVal '=' Exp ';'
+     * 8. Stmt -> LVal '=' 'getint''('')'';'
+     * 9. Stmt -> [Exp] ';'
+     */
     public Stmt Stmt() {
         Lval lval = null;
         Exp exp = null;

@@ -17,11 +17,14 @@ public class BasicBlock extends Value{
         this.insts = new ArrayList<>();
     }
 
-    public void printMoi(String path) {
-        IOUtils.write(String.format(";<label>:%s:\n", name), path, true);
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        str.append(String.format(";<label>:%s:\n", name));
         for (Inst value : insts) {
-            IOUtils.write(String.format("\t%s\n", value.toString()), path, true);
+            str.append(String.format("\t%s\n", value.toString()));
         }
+        return str.toString();
     }
 
     public Function getParent() {

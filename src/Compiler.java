@@ -45,7 +45,7 @@ public class Compiler {
         MidGenerator midGenerator = new MidGenerator();
         midGenerator.generate(SynAnalyzer.root);
         if (op == 4) {
-            Module.module.printMoi("llvm_ir.txt");
+            IOUtils.write(Module.module.toString(), "llvm_ir.txt", false);
         }
     }
 }

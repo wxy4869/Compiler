@@ -4,8 +4,9 @@ import mid.BasicBlock;
 import mid.Value;
 
 public class PutInst extends Inst{
-    // call void @putch(i32 114)
-    // call void @putint(i32 %1)
+    /* call void @putch(i32 114)
+     * call void @putint(i32 %1)
+     */
     Value dst;
     boolean isInt;
 

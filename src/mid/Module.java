@@ -9,17 +9,19 @@ public class Module {
     ArrayList<GlobalVariable> globalVariables = new ArrayList<>();
     ArrayList<Function> functions = new ArrayList<>();
 
-    public void printMoi(String path) {
-        IOUtils.write("declare i32 @getint()\n", path, false);
-        IOUtils.write("declare void @putch(i32)\n", path, true);
-        IOUtils.write("declare void @putint(i32)\n\n", path, true);
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        str.append("declare i32 @getint()\n");
+        str.append("declare void @putch(i32)\n");
+        str.append("declare void @putint(i32)\n");
         for (GlobalVariable value : globalVariables) {
-            value.printMoi(path);
+            str.append(value);
         }
         for (Function value : functions) {
-            IOUtils.write("\n", path, true);
-            value.printMoi(path);
+            str.append(value);
         }
+        return str.toString();
     }
 
     public ArrayList<GlobalVariable> getGlobalVariables() {
