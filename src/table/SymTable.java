@@ -31,6 +31,18 @@ public class SymTable {
         return null;
     }
 
+    public boolean isFuncVoid() {
+        if (isFunc) {
+            return isVoid;
+        } else {
+            if (parent == null) {
+                return false;
+            } else {
+                return parent.isFuncVoid();
+            }
+        }
+    }
+
     public Map<String, Symbol> getSymbolMap() {
         return symbolMap;
     }

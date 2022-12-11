@@ -130,7 +130,7 @@ public class SymGenerator {
                 currentTable = new SymTable(currentTable, false, false, currentTable.depth + 1);
                 table.put(stmt.getBlock(), currentTable);
             } else if (stmt.getType() == 5) {
-                if (currentTable.isFunc && currentTable.isVoid && stmt.getExp() != null) {
+                if (currentTable.isFuncVoid() && stmt.getExp() != null) {
                     ErrHandler.errors.add(new Error("f", stmt.getReturnTK().getLineNum()));
                 }
             } else if (stmt.getType() == 7 || stmt.getType() == 8) {
@@ -175,7 +175,7 @@ public class SymGenerator {
                 if (symbol == null) {
                     ErrHandler.errors.add(new Error("c", unaryExp.getIdent().getLineNum()));
                 }
-                if (symbol != null && unaryExp.getFuncRParams() != null) {
+                if (symbol != null && unaryExp.getIdent() != null) {
                     Func func = (Func) symbol;
                     int paramNumF = func.getParamNum();  // 形参
                     int paramNumR = unaryExp.getFuncRParams() == null ? 0 : unaryExp.getFuncRParams().getExp().size();  // 实参

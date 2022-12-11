@@ -349,10 +349,13 @@ public class SynAnalyzer {
             int tmp = index;
             if (!getSymType(0).equals("SEMICN")) {
                 try {
-                    exp = Exp();
-                    if (!getSymType(0).equals("SEMICN")) {
-                        tmp = index;
-                        exp = null;
+                    if (getSymType(0).equals("LPARENT") || getSymType(0).equals("IDENFR") || getSymType(0).equals("INTCON")
+                            || getSymType(0).equals("PLUS") || getSymType(0).equals("MINU") || getSymType(0).equals("NOT")) {
+                        exp = Exp();
+                        if (getSymType(0).equals("ASSIGN")) {
+                            index = tmp;
+                            exp = null;
+                        }
                     }
                 } catch (Exception e) {
                     index = tmp;
@@ -385,15 +388,13 @@ public class SynAnalyzer {
                 nextSym();
             }
             type = 6;
-        } else if (getSymType(0).equals("LPARENT") || getSymType(0).equals("INTCON")) { // Stmt -> [Exp] ';' 的第一种情况
+        } else if (!(getSymType(0).equals("LPARENT") || getSymType(0).equals("IDENFR") || getSymType(0).equals("INTCON")
+                || getSymType(0).equals("PLUS") || getSymType(0).equals("MINU") || getSymType(0).equals("NOT")
+                || getSymType(0).equals("SEMICN"))) { // Stmt -> [Exp] ';' 的第一种情况
             int tmp = index;
             if (!getSymType(0).equals("SEMICN")) {
                 try {
                     exp = Exp();
-                    if (!getSymType(0).equals("SEMICN")) {
-                        tmp = index;
-                        exp = null;
-                    }
                 } catch (Exception e) {
                     index = tmp;
                 }
@@ -414,7 +415,7 @@ public class SynAnalyzer {
                 if (!getSymType(0).equals("GETINTTK")) { // Stmt -> LVal '=' Exp ';'
                     exp = Exp();
                     if (!sym(0).getDst().equals("SEMICN")) {  // 错误处理
-                        ErrHandler.errors.add(new Error("i",sym(-1).getLineNum()));
+                        ErrHandler.errors.add(new Error("i", sym(-1).getLineNum()));
                     } else {
                         nextSym();
                     }
@@ -423,12 +424,12 @@ public class SynAnalyzer {
                     nextSym();
                     nextSym();
                     if (!sym(0).getDst().equals("RPARENT")) {  // 错误处理
-                        ErrHandler.errors.add(new Error("j",sym(-1).getLineNum()));
+                        ErrHandler.errors.add(new Error("j", sym(-1).getLineNum()));
                     } else {
                         nextSym();
                     }
                     if (!sym(0).getDst().equals("SEMICN")) {  // 错误处理
-                        ErrHandler.errors.add(new Error("i",sym(-1).getLineNum()));
+                        ErrHandler.errors.add(new Error("i", sym(-1).getLineNum()));
                     } else {
                         nextSym();
                     }
@@ -437,9 +438,20 @@ public class SynAnalyzer {
             } else { // Stmt -> [Exp] ';' 的第二种情况
                 index = tmp;
                 if (!getSymType(0).equals("SEMICN")) {
-                    exp = Exp();
+                    try {
+                        if (getSymType(0).equals("LPARENT") || getSymType(0).equals("IDENFR") || getSymType(0).equals("INTCON")
+                                || getSymType(0).equals("PLUS") || getSymType(0).equals("MINU") || getSymType(0).equals("NOT")) {
+                            exp = Exp();
+                        }
+                    } catch (Exception e) {
+                        index = tmp;
+                    }
                 }
-                nextSym();
+                if (!sym(0).getDst().equals("SEMICN")) {  // 错误处理
+                    ErrHandler.errors.add(new Error("i", sym(-1).getLineNum()));
+                } else {
+                    nextSym();
+                }
                 type = 9;
             }
         }
@@ -512,13 +524,10 @@ public class SynAnalyzer {
             nextSym();
             nextSym();
             int tmp = index;
-            if (!getSymType(0).equals("RPARENT")) {
+            if (getSymType(0).equals("LPARENT") || getSymType(0).equals("IDENFR") || getSymType(0).equals("INTCON")
+                    || getSymType(0).equals("PLUS") || getSymType(0).equals("MINU") || getSymType(0).equals("NOT")) {
                 try {
                     funcRParams = FuncRParams();
-                    if (!getSymType(0).equals("RPARENT")) {
-                        tmp = index;
-                        funcRParams = null;
-                    }
                 } catch (Exception e) {
                     index = tmp;
                 }
