@@ -27,9 +27,9 @@ Stmt 			→ LVal '=' Exp ';'
 				| Block
 				| 'if' '(' Cond ')' Stmt [ 'else' Stmt ]
 				| 'break' ';' 
-    			| 'continue' ';'
+				| 'continue' ';'
 				| 'return' [Exp] ';' 
-			    | LVal '=' 'getint''('')'';'
+				| LVal '=' 'getint''('')'';'
 				| 'printf''('FormatString{','Exp}')'';'
 Exp		 		→ AddExp
 Cond 			→ LOrExp 
