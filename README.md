@@ -7,23 +7,23 @@
 ## 文法定义
 
 ```c
-CompUnit 		→ {Decl} {FuncDef} MainFuncDef
-Decl 			→ ConstDecl | VarDecl
-ConstDecl 		→ 'const' BType ConstDef { ',' ConstDef } ';'
-BType 			→ 'int'
+CompUnit		→ {Decl} {FuncDef} MainFuncDef
+Decl			→ ConstDecl | VarDecl
+ConstDecl		→ 'const' BType ConstDef { ',' ConstDef } ';'
+BType			→ 'int'
 ConstDef		→ Ident { '[' ConstExp ']' } '=' ConstInitVal
 ConstInitVal	→ ConstExp | '{' [ ConstInitVal { ',' ConstInitVal } ] '}'
-VarDecl 		→ BType VarDef { ',' VarDef } ';' 
-VarDef 			→ Ident { '[' ConstExp ']' } | Ident { '[' ConstExp ']' } '=' InitVal
-InitVal 		→ Exp | '{' [ InitVal { ',' InitVal } ] '}'
-FuncDef		 	→ FuncType Ident '(' [FuncFParams] ')' Block
-MainFuncDef 	→ 'int' 'main' '(' ')' Block
+VarDecl			→ BType VarDef { ',' VarDef } ';' 
+VarDef			→ Ident { '[' ConstExp ']' } | Ident { '[' ConstExp ']' } '=' InitVal
+InitVal			→ Exp | '{' [ InitVal { ',' InitVal } ] '}'
+FuncDef			→ FuncType Ident '(' [FuncFParams] ')' Block
+MainFuncDef		→ 'int' 'main' '(' ')' Block
 FuncType		→ 'void' | 'int'
-FuncFParams 	→ FuncFParam { ',' FuncFParam }
-FuncFParam 		→ BType Ident ['[' ']' { '[' ConstExp ']' }]
-Block 			→ '{' { BlockItem } '}'
-BlockItem 		→ Decl | Stmt
-Stmt 			→ LVal '=' Exp ';'
+FuncFParams		→ FuncFParam { ',' FuncFParam }
+FuncFParam		→ BType Ident ['[' ']' { '[' ConstExp ']' }]
+Block			→ '{' { BlockItem } '}'
+BlockItem		→ Decl | Stmt
+Stmt			→ LVal '=' Exp ';'
 				| Block
 				| 'if' '(' Cond ')' Stmt [ 'else' Stmt ]
 				| 'break' ';' 
@@ -31,21 +31,21 @@ Stmt 			→ LVal '=' Exp ';'
 				| 'return' [Exp] ';' 
 				| LVal '=' 'getint''('')'';'
 				| 'printf''('FormatString{','Exp}')'';'
-Exp		 		→ AddExp
-Cond 			→ LOrExp 
-LVal 			→ Ident {'[' Exp ']'}
-PrimaryExp 		→ '(' Exp ')' | LVal | Number
-Number 			→ IntConst
-UnaryExp 		→ PrimaryExp | Ident '(' [FuncRParams] ')' | UnaryOp UnaryExp
-UnaryOp 		→ '+' | '−' | '!'
-FuncRParams 	→ Exp { ',' Exp }
-MulExp 			→ UnaryExp | MulExp ('*' | '/' | '%') UnaryExp
-AddExp 			→ MulExp | AddExp ('+' | '−') MulExp
-RelExp	 		→ AddExp | RelExp ('<' | '>' | '<=' | '>=') AddExp
-EqExp 			→ RelExp | EqExp ('==' | '!=') RelExp
-LAndExp 		→ EqExp | LAndExp '&&' EqExp
-LOrExp 			→ LAndExp | LOrExp '||' LAndExp
-ConstExp 		→ AddExp
+Exp				→ AddExp
+Cond			→ LOrExp 
+LVal			→ Ident {'[' Exp ']'}
+PrimaryExp		→ '(' Exp ')' | LVal | Number
+Number			→ IntConst
+UnaryExp		→ PrimaryExp | Ident '(' [FuncRParams] ')' | UnaryOp UnaryExp
+UnaryOp			→ '+' | '−' | '!'
+FuncRParams		→ Exp { ',' Exp }
+MulExp			→ UnaryExp | MulExp ('*' | '/' | '%') UnaryExp
+AddExp			→ MulExp | AddExp ('+' | '−') MulExp
+RelExp			→ AddExp | RelExp ('<' | '>' | '<=' | '>=') AddExp
+EqExp			→ RelExp | EqExp ('==' | '!=') RelExp
+LAndExp			→ EqExp | LAndExp '&&' EqExp
+LOrExp			→ LAndExp | LOrExp '||' LAndExp
+ConstExp		→ AddExp
 ```
 
 
