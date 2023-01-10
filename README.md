@@ -12,7 +12,7 @@ Decl			→ ConstDecl | VarDecl
 ConstDecl		→ 'const' BType ConstDef { ',' ConstDef } ';'
 BType			→ 'int'
 ConstDef		→ Ident { '[' ConstExp ']' } '=' ConstInitVal
-ConstInitVal	→ ConstExp | '{' [ ConstInitVal { ',' ConstInitVal } ] '}'
+ConstInitVal		→ ConstExp | '{' [ ConstInitVal { ',' ConstInitVal } ] '}'
 VarDecl			→ BType VarDef { ',' VarDef } ';' 
 VarDef			→ Ident { '[' ConstExp ']' } | Ident { '[' ConstExp ']' } '=' InitVal
 InitVal			→ Exp | '{' [ InitVal { ',' InitVal } ] '}'
@@ -24,14 +24,14 @@ FuncFParam		→ BType Ident ['[' ']' { '[' ConstExp ']' }]
 Block			→ '{' { BlockItem } '}'
 BlockItem		→ Decl | Stmt
 Stmt			→ LVal '=' Exp ';'
-				| Block
-				| 'if' '(' Cond ')' Stmt [ 'else' Stmt ]
-				| 'break' ';' 
-				| 'continue' ';'
-				| 'return' [Exp] ';' 
-				| LVal '=' 'getint''('')'';'
-				| 'printf''('FormatString{','Exp}')'';'
-Exp				→ AddExp
+			| Block
+			| 'if' '(' Cond ')' Stmt [ 'else' Stmt ]
+			| 'break' ';' 
+			| 'continue' ';'
+			| 'return' [Exp] ';' 
+			| LVal '=' 'getint''('')'';'
+			| 'printf''('FormatString{','Exp}')'';'
+Exp			→ AddExp
 Cond			→ LOrExp 
 LVal			→ Ident {'[' Exp ']'}
 PrimaryExp		→ '(' Exp ')' | LVal | Number
